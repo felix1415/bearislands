@@ -5,16 +5,38 @@ const config = require('../config');
 const auth = require('./auth');
 var FusionAuth = require('@fusionauth/typescript-client');
 
+const topology = {useUnifiedTopology: true};
+
 debug = false;
 
 const client = new FusionAuth.FusionAuthClient(
     config.apiKey,   //better put this into a config
-    'http://localhost:9011'
+    config.fusionAuthServer
 );
 
 router.use('/*', (req, res, next) => {
 	validateAdmin(req, res, next);
 });
+
+router.post("/counters", function(req, res) {
+    var query = { counterName: req.body.counterName };
+    var newCounts = { $inc: { count: 1 }}
+    var options = {upsert: true}
+
+    MongoClient.connect(config.mongoInstance, topology, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db(config.mongoDatabase);
+        dbo.collection("counters").updateOne(query, newValues, options, function(err, res) {
+            if (err) throw err;
+            console.log("1 document inserted");
+            db.close();
+        });
+    });
+
+    res.send("updated counter");
+});
+
+// router.get("/counters")
 
 // function landingPage(isAdmin, req, res)
 // {

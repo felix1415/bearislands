@@ -57,7 +57,7 @@ class Contact extends React.Component
 			"message":this.state.message
  		}
  		axios
-	    .post(config.apiServer + config.serverPort + '/contact/initialMessage ', payload)
+		.post(config.apiServer + config.serverPort + '/contact/initialMessage ', payload)
 	    .then(response =>
     	  	{
 	    	  	if(response.status === 200)
@@ -69,7 +69,7 @@ class Contact extends React.Component
 	    .catch(err => 
 	    	{
 	      		console.error("sending message failied: " + err);
-	    	}); 		
+	    	}); 
 	}
 
 	render()
@@ -88,6 +88,26 @@ class Contact extends React.Component
 		        </Typography>
 		        <div/>
 		        <br/>
+
+	            <form onSubmit={this.handleSubmit}>
+					<TextField
+						name="email"
+						label="Email"
+				    	onChange={this.handleChange}
+				     />
+				   	<br/>
+				   	<br/>
+				   	<TextField
+				   		name="subject"
+				   		label="Subject"c  
+				    	onChange={this.handleChange}
+				       />
+				    <br/>
+				    <br/>
+				    <TextareaAutosize name="message" aria-label="minimum height" rowsMin={3} placeholder="Message" onChange={this.handleChange} />
+				    <br/>
+					<Button type="submit" variant="contained" label="Submit" primary="true">Submit </Button>
+				</form>
 
 
 		        <CopyToClipboard text="BearPatrol.BearIsland@Gmail.com">

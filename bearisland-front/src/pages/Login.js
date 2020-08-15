@@ -60,7 +60,7 @@ class Login extends React.Component
  					this.setState({loginMessage: 'Login successful.'});
  					this.setState({open: true});
 
- 					this.props.setLoggedInCallback(true);
+ 					this.props.setLoggedInCallback(true, this.state.email);
  					return true;
  				}
 		  	})

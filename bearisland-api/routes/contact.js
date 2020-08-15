@@ -125,29 +125,33 @@ router.post('/initialMessage', function(req, res) {
     res.send("stored");
 });
 
-// router.post('/newMessage', function(req, res) {
-//     const convoUuid = req.body.uuid;
-//     const newUuid = uuidv4();
-//     const date = new Date();
-//     const message = {
-//         '_id': newUuid,
-//         'email': req.body.email,
-//         'date': date,
-//         'message': req.body.message
-//     };
+router.post('/newMessage', function(req, res) {
+    const convoUuid = req.body.uuid;
+    const newUuid = uuidv4();
+    const date = new Date();
+    const message = {
+        '_id': newUuid,
+        'email': req.body.email,
+        'date': date,
+        'message': req.body.message
+    };
 
-//     MongoClient.connect(config.mongoInstance, topology, function(err, db) {
-//           if (err) throw err;
-//       var dbo = db.db();
-//       dbo.collection(convoUuid).insertOne(contactForm, function(err, res) {
-//         if (err) throw err;
-//         console.log("1 document (" + newUuid + ") inserted into messages of conversation " + convoUuid);
-//         db.close();
-//       });
-//     });
+    console.log("convo id: " + convoUuid);
 
-//     res.send("stored");
-// });
+    console.log("got message: " + JSON.stringify(message));
+
+    MongoClient.connect(config.mongoInstance, topology, function(err, db) {
+          if (err) throw err;
+      var dbo = db.db(config.mongoDatabase);
+      dbo.collection(convoUuid).insertOne(message, function(err, res) {
+        if (err) throw err;
+        console.log("1 document (" + message._id + ") inserted into messages of conversation " + convoUuid);
+        db.close();
+      });
+    });
+
+    res.send("stored");
+});
 
 router.use(function (err, req, res, next) {
   console.error(err.stack)

@@ -46,48 +46,50 @@ const useStyles = makeStyles({
 
 function MessageOriginIsThisEmail(props)
 {
-    console.log(":::::   " + props.messageEmail + "    " + props.userEmail);
+    console.log("This chat originates from " + props.messageEmail + " and has been opened by " + props.userEmail);
     if(props.messageEmail === props.userEmail)
     {
+        console.log("little grid");
         return <Grid item xs={3}></Grid>;
     }
-    return <Grid item xs={0}></Grid>
+    console.log("send a PHAT filler grid")
+    return <Grid></Grid>;
 }
 
-function MineOrTheresPaper(props)
+function MineOrTheirsPaper(props)
 {
     if(props.messageEmail === props.userEmail)
     {
-        return <Paper key={props.value._id} className={props.classes.theirs}>
+        return <Paper key={props.value._id} className={props.classes.mine}>
                     {React.cloneElement(props.element, {
                         key: props.value._id,
                         primary: props.value.message,
                         secondary: props.value.date
                         })}
-                    </Paper>
+                </Paper>
     }
-    return <Paper key={props.value._id} className={props.classes.mine}>
-            {React.cloneElement(props.element, {
-                key: props.value._id,
-                primary: props.value.message,
-                secondary: props.value.date
-                })}
+    return <Paper key={props.value._id} className={props.classes.theirs}>
+                {React.cloneElement(props.element, {
+                    key: props.value._id,
+                    primary: props.value.message,
+                    secondary: props.value.date
+                    })}
             </Paper>
 
 }
 
 function     GenerateChat(props) {
+    console.log("CHAT OPENED WITH EMAIL:@ " + props.email);
     const classes = useStyles();
     return JSON.parse(props.messages).map((value) =>
         <ListItem key={value._id}>
+    {/*can probably clear up the way we decide hgow to format the chat instead of calculating it twice here and MineOrTheirs*/}
             <MessageOriginIsThisEmail messageEmail={props.email} userEmail={value.email}/>
             <Grid key={value._id} item xs={9}>
                 <GridListTile key={value._id} cols={1} rows={1}>
-                    <MineOrTheresPaper value={value} element={props.element} classes={classes} messageEmail={props.email} userEmail={value.email}/>
+                        <MineOrTheirsPaper value={value} element={props.element} classes={classes} messageEmail={props.email} userEmail={value.email}/>
                 </GridListTile>
-
             </Grid>
-            
         </ListItem>
     );
 }
@@ -95,25 +97,39 @@ function     GenerateChat(props) {
 
 class ChatWindow extends React.Component
 {
+
     constructor(props)
     {
         super(props);
 
-        this.state = {email: '', messages: '', uuid: this.props.match.params.uuid, validId: false, sentMessage: false}
+        this.state = {email: this.props.useremail, messages: '', uuid: this.props.match.params.uuid, validId: false, sentMessage: false}
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this);
+        this.getAllMessages = this.getAllMessages.bind(this);
+        this.ref = React.createRef();
     }
 
-    handleChange (evt) {
-        this.setState({ [evt.target.name]: evt.target.value });
+    handleKeyPress(event)
+    {
+        console.log("PRESSED " + event.charCode )
+        if(event.charCode  == 13 && !event.shiftKey && !event.ctrlKey){
+            this.handleSubmit(event);
+        }
+    }
+
+    handleChange (event) {
+        this.setState({ [event.target.name]: event.target.value });
     }
 
     handleSubmit(event)
     {
+        console.log("about to send: " + this.state.message);
+        this.scrollToMyBottomOfChat();
         event.preventDefault();
         var payload = {
-            "email":this.state.email,
+            "email": this.state.email,
             "uuid":this.state.uuid,
             "message":this.state.message
         }
@@ -123,17 +139,21 @@ class ChatWindow extends React.Component
             {
                 if(response.status === 200)
                 {
-                    console.log("sent message successfully " + response.status); 
                     this.setState({sentMessage: true});
+                    this.setState({message: ''});
                 }
             })
+        .then(response =>
+        {
+            this.getAllMessages();
+        })
         .catch(err => 
-            {
-                console.error("newMessage failed: " + err);
-            });         
+        {
+            console.error("newMessage failed: " + err);
+        });         
     }
 
-    componentDidMount()
+    getAllMessages()
     {
         axios
         .get(config.apiServer + config.serverPort + '/contact/getAllMessages', {
@@ -148,24 +168,51 @@ class ChatWindow extends React.Component
                 if(response.status === 200)
                 {
                     this.setState({'messages': JSON.stringify(response.data)});
-                    this.setState({email: "alexgray1415@gmail.com"});
+                }
+
+                if(!this.state.email)
+                {
+                    if(this.props.email === '')
+                    {
+                        console.log("setting state of email to " + response.data[0].email);
+                        this.setState({email: response.data[0].email});
+                    }
+                    else
+                    {
+                        this.setState({email: this.props.email});
+                    }
                 }
             })
+        .then(response =>
+        {    
+            this.scrollToMyBottomOfChat();
+        })
         .catch(err => 
-            {
-                console.error("sending message failied: " + err);
-            });     
+        {
+            console.error("getting messages failied: " + err);
+        });
+    }
+
+    componentDidMount()
+    {
+        this.getAllMessages();
         //mine on the right, there's on the left
     }
 
-
+    scrollToMyBottomOfChat()
+    {
+        this.ref.current.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'end',
+                });
+    }
 
     render()
     {
         if(!this.state.messages)
         {
             return (<Typography variant="h6">
-                        Bearisland Private Chat
+                        Bearisland Private Chat - this conversation doesn't exist or has been archived.
                     </Typography>);
         }
 
@@ -176,17 +223,20 @@ class ChatWindow extends React.Component
                         <Typography variant="h6">
                             Bearisland Private Chat
                         </Typography>
-                        <GridList cellHeight={300} cols={1}>
-                            <List height={400} width={300} itemSize={46} > {/* dense={dense}*/}
+                        <GridList cellHeight={300} cols={1} ref="messageHolder">
+                            <List> {/* dense={dense}*/}
                                 <Grid container >
                                     <GenerateChat messages={this.state.messages} element={<ListItemText/>} email={this.state.email}/>
                                 </Grid>
+                                <div ref={this.ref} className="Chat"></div>
                             </List>
                         </GridList>
                     </Grid>
                     <Grid container direction="row" alignItems="center" >
                         <Grid item xs={9}>
-                            <TextField multiline id="standard-basic" label="Message" fullWidth={true}/>
+                            <form onSubmit={this.handleSubmit}>
+                                <TextField multiline id="standard-basic" value={this.state.message} name="message" label="message" fullWidth={true} onChange={this.handleChange} onKeyPress={this.handleKeyPress}/>
+                            </form>
                         </Grid>
                         <Grid item xs={3}>
                             <form onSubmit={this.handleSubmit}>
@@ -194,8 +244,8 @@ class ChatWindow extends React.Component
                             </form>
                         </Grid>
                     </Grid>
-
                 </Grid>
+                
             </Box>
         );
     }
