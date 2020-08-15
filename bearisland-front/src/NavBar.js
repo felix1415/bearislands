@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Link from '@material-ui/core/Link';
+import Hidden from '@material-ui/core/Hidden';
 
 import Home from './pages/Home';
 import DayZ from './pages/DayZPage';
@@ -15,6 +16,8 @@ import Login from './pages/Login';
 import Logout from './pages/Logout';
 import Admin from './pages/Admin';
 import ChatWindow from './pages/ChatWindow';
+
+import CustomizedMenus from './utils/CustomMenu';
 
 import {
   BrowserRouter as Router,
@@ -44,15 +47,13 @@ function LoginOrLogout(props)
     if(props.loggedInState)
     {
         return(
-          <div> 
-              <Button component={RLink} to="/admin" >Dashboard</Button>
+          <div>
+              <Button component={RLink} to="/admin" >Admin</Button>
               <Button component={RLink} to="/logout" >Logout</Button>
           </div>);
     }
     return <Button component={RLink} to="/login" >Login</Button>;
 }
-
-
 
 class MainBar extends React.Component
 {
@@ -64,14 +65,16 @@ class MainBar extends React.Component
     // this.state={loggedIn: false};
     this.state = JSON.parse(localStorage.getItem('rootNavBarState'))
         ? JSON.parse(localStorage.getItem('rootNavBarState'))
-        : {loggedIn: false};
+        : {loggedIn: false, email:''};
     this.setLoggedIn = this.setLoggedIn.bind(this);
   }
 
 
-  setLoggedIn(newLoggedInValue, callback)
+  setLoggedIn(newLoggedInValue, loggedInEmail, callback)
   {
       this.setState({ loggedIn: newLoggedInValue });
+      this.setState({ email: loggedInEmail });
+      console.log(this.state);
       localStorage.setItem('rootNavBarState', JSON.stringify(this.state));
   }
 
@@ -82,27 +85,31 @@ class MainBar extends React.Component
         <div className={classes.root}>
           <AppBar position="static">
             <Toolbar>
-              <ButtonGroup variant="outlined" size="large" aria-label="primary button group"> 
-              {/*<nav>*/}
-                <Link component={RLink} to="/" variant="button" color="textPrimary" href="#" className={classes.link} >
-                  Home
-                </Link>
-                <Link component={RLink} to="/dayz" variant="button" color="textPrimary" href="#" className={classes.link} >
-                  DayZ
-                </Link>
-                <Link component={RLink} to="/rust" variant="button" color="textPrimary" href="#" className={classes.link}>
-                  Rust
-                </Link>
-                <Link component={RLink} to="/contact" variant="button" color="textPrimary" href="#" className={classes.link}>
-                  Contact
-                </Link>
+              <Hidden only={['lg', 'xl']}>
+                <CustomizedMenus RLink classes />
+              </Hidden>
+              <Hidden only={['sm', 'xs', 'md']}>
+                <ButtonGroup variant="outlined" size="large" aria-label="primary button group"> 
+                  <Link component={RLink} to="/" variant="button" color="textPrimary" href="#" className={classes.link} >
+                    Home
+                  </Link>
+                  <Link component={RLink} to="/dayz" variant="button" color="textPrimary" href="#" className={classes.link} >
+                    DayZ
+                  </Link>
+                  <Link component={RLink} to="/rust" variant="button" color="textPrimary" href="#" className={classes.link}>
+                    Rust
+                  </Link>
+                  <Link component={RLink} to="/contact" variant="button" color="textPrimary" href="#" className={classes.link}>
+                    Contact
+                  </Link>
+                </ButtonGroup>
+              </Hidden>
 
-              {/*</nav>*/}
-              </ButtonGroup>
-
-              <Typography variant="h6" className={classes.title}>
-
-              </Typography>
+              <Hidden only={['sm', 'xs', 'md']}>
+                <Typography variant="body1" className={classes.title}>
+                    {this.state.email}
+                </Typography>
+              </Hidden>
 
               <LoginOrLogout loggedInState={this.state.loggedIn} />
             </Toolbar>
@@ -123,6 +130,7 @@ class MainBar extends React.Component
             <Route path="/contact/:uuid" render={({match}) => (
                     <ChatWindow
                       uuid={match.params.uuid}
+                      email={this.state.email}
                     />
             )}/>
             <Route exact path="/contact/">

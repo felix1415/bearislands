@@ -1,34 +1,47 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
-import GridListTileBar from '@material-ui/core/GridListTileBar';
-import IconButton from '@material-ui/core/IconButton';
-import InfoIcon from '@material-ui/icons/Info';
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import {tileData} from './assets/gameServers.js';
+import ResponsiveImage from './utils/ResponsiveImage';
 
+// const useStyles = makeStyles((theme) => ({
+//   root: {
+//     display: 'flex',
+//     flexWrap: 'wrap',
+//     justifyContent: 'space-around',
+//     overflow: 'hidden',
+//     backgroundColor: theme.palette.background.paper,
+//   },
+//   gridList: {
+//     width: 1000,
+//     height: 200,
+//   },
+//   icon: {
+//     color: 'rgba(255, 255, 255, 0.4)',
+//   },
+//   link: {
+//     '& > * + *': {
+//       marginLeft: theme.spacing(2),
+//     },
+//   },
+// }));
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    overflow: 'hidden',
-    backgroundColor: theme.palette.background.paper,
+    height: 450,
+    maxWidth: 345,
   },
-  gridList: {
-    width: 1000,
-    height: 200,
+  media: {
+    height: 170,
   },
-  icon: {
-    color: 'rgba(255, 255, 255, 0.4)',
-  },
-  link: {
-    '& > * + *': {
-      marginLeft: theme.spacing(2),
-    },
-  },
-}));
+});
 
 /**
  * The example data is structured as follows:
@@ -55,22 +68,36 @@ export default function ServerGridList() {
 
   return (
     <div className={classes.root}>
-      <GridList cellHeight={180} className={classes.gridList}>
+      <Grid item xs={12}>
+      <Grid container justify="center" alignItems="center" spacing={1}>
         {tileData.map((tile) => (
-          <GridListTile key={tile.title}>
-            <img src={tile.img} alt={tile.title} />
-            <GridListTileBar
-              title={tile.title}
-              subtitle={<span>server info: {tile.subtitle}</span>}
-              actionIcon={
-                <IconButton aria-label={`info about ${tile.title}`} className={classes.icon}>
-                  <InfoIcon />
-                </IconButton>
-              }
-            />
-          </GridListTile>
+          <Grid item xs={12} >
+            <Card className={classes.root}>
+              <CardActionArea>
+                <CardMedia
+                  className={classes.media}
+                  image={tile.img}
+                  title={tile.title}
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    {tile.title}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" component="p">
+                    {tile.subtitle}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+              <CardActions>
+                <Button variant="contained" size="small" color="primary">
+                  Connect
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
         ))}
-      </GridList>
+    </Grid>
+    </Grid>
     </div>
   );
 }
