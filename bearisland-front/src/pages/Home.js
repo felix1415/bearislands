@@ -12,7 +12,7 @@ export default function Home() {
 		<Container fixed>
 			<Box my={4}>
 
-				<Grid container spacing={2}>
+				<Grid container >
 					<Grid item xs={12}>
 				        <Typography variant="h2" gutterBottom>
 				          Bear Island Servers
@@ -24,7 +24,9 @@ export default function Home() {
 				        </Typography>
 			        </Grid>
 			        
-			        <ServerGridList />
+			        <Grid item xs={12}>
+			        	<ServerGridList />
+			        </Grid>
 
 			        
 		        </Grid>

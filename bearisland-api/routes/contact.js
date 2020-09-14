@@ -44,20 +44,6 @@ router.post('/sendMessage', function(req, res) {
     res.send("stored");
 });
 
-router.get('/getAllConversations', function(req, res) {
-
-    MongoClient.connect(config.mongoInstance, topology, function(err, db) {
-      if (err) throw err;
-      var dbo = db.db(config.mongoDatabase);
-      dbo.collection("conversations").find().toArray(function(err, res) {
-        if (err) throw err;
-        console.log("1 document (" + result);
-        res.send(result);
-        db.close();
-      });
-    });
-});
-
 router.get('/getAllMessages', function(req, res) {
     const uuid = req.query.uuid;
     console.log("trying for messages from conversation " + uuid);

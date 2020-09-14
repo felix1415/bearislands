@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { Redirect } from 'react-router-dom'
 import PageCounter from '../utils/PageCounter'
+import ConversationComp from '../pages/ConversationComp'
 
 // const config = require('../config');
 
@@ -30,6 +31,9 @@ class Admin extends React.Component
                         <Grid item xs={12}>
                             Counters
                             <PageCounter read={true}/>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <ConversationComp />
                         </Grid>
                     </Grid>
             </Box>

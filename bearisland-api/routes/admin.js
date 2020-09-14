@@ -7,7 +7,7 @@ var FusionAuth = require('@fusionauth/typescript-client');
 
 const topology = {useUnifiedTopology: true};
 
-debug = false;
+debug = true;
 
 const client = new FusionAuth.FusionAuthClient(
     config.apiKey,   //better put this into a config
@@ -36,6 +36,36 @@ router.post("/counters", function(req, res) {
     res.send("updated counter");
 });
 
+router.get('/getAllConversations', function(req, res) {
+    // const uuid = req.query.uuid;
+    console.log("trying for messsages from conversation ");
+    // MongoClient.connect(config.mongoInstance, topology, function(err, db) {
+    //   if (err) throw err;
+    //   var dbo = db.db(config.mongoDatabase);
+    //   dbo.collection(uuid).find().toArray(function(err, result) {
+    //     if (err) throw err;
+    //     console.log("1 document (" + JSON.stringify(result) + ")");
+    //     res.send(result);
+    //     db.close();
+    //   });
+    // });
+
+});
+
+router.get("/getAllArchivedConversations", function(req, res) {
+    DEBUG_LOG("getting all conversations ");
+    MongoClient.connect(config.mongoInstance, topology, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db(config.mongoDatabase);
+      dbo.collection("conversations").find({archived: true}).toArray(function(err, res) {
+        if (err) throw err;
+        console.log("1 document (" + result);
+        res.send(result);
+        db.close();
+      });
+    });
+});
+
 // router.get("/counters")
 
 // function landingPage(isAdmin, req, res)
@@ -54,13 +84,14 @@ router.post("/counters", function(req, res) {
 // }
 
 router.get("/test", function(req, res) {
-	DEBUG_LOG("admin " + req.session.user.id + " has tested they are admin succefully");
+	// DEBUG_LOG("admin " + req.session.user.id + " has tested they are admin succefully");
 	res.send("You are admin.");
-	// validateAdmin(req, res, landingPage);
 });
 
 
 function validateAdmin(req, res, next) {
+
+    //this is broken when we try to validate the JWT- why? is it becuase it comes from the cookie?
     if (!req.session.user) {
     	forbidden(req, res);
     } 
@@ -68,6 +99,7 @@ function validateAdmin(req, res, next) {
     {
     	DEBUG_LOG("about to check if admin");
     	var admin = false;
+        DEBUG_LOG(req.session.token);
     	let promise = client.validateJWT(req.session.token)
 	    	.then(function(clientResponse) {
 	    			for(var role of clientResponse.response.jwt.roles) 
