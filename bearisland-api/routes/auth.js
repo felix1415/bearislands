@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const bodyParser = require('body-parser');
+var cookie = require('cookie');
 var cookieParser = require('cookie-parser');
 const config = require('../config');
 
@@ -37,10 +38,10 @@ router.get('/logoutall', function(req, res) {
 
 
 router.get('/reqprint', function(req, res) {   
-	console.log('email: ', req); 
-	res.send("test");
+	console.log('email: ', req.cookies.email); 
+    console.log('email: ', req.cookies.token); 
+    res.send();
 });
-
 
 router.post('/login', function(req, res) {
     if (req.cookies.user) {
@@ -55,10 +56,14 @@ router.post('/login', function(req, res) {
             .then(function(clientResponse) {
                 // console.log("response from fusionauth: ",JSON.stringify(clientResponse, null, 8));
                 console.log("response from fusionauth: ",JSON.stringify(clientResponse.statusCode, null, 8));
-                res.cookie('token', clientResponse.response.token, { httpOnly: true, secure: process.env.NODE_ENV === 'production'? true: false});
-                res.cookie('refreshToken', clientResponse.response.refreshToken, { httpOnly: true });
-                res.cookie('user', clientResponse.response.user, { httpOnly: true });
+                //, secure: process.env.NODE_ENV === 'production'? true: false
+                res.cookie('token', clientResponse.response.token, { httpOnly: true, maxAge: 2592000, overwrite: true});
+                res.cookie('refreshToken', clientResponse.response.refreshToken, { httpOnly: true, maxAge: 2592000, overwrite: true});
+                res.cookie('user', clientResponse.response.user, { httpOnly: true, maxAge: 2592000, overwrite: true});
 
+                // req.session.cookie.maxAge = 5555;
+
+                console.log("Successfully saved cookies : " +  JSON.stringify(req.cookies));
                 res.send('success');
             })
             .catch(function(error) {
@@ -108,6 +113,7 @@ router.get('/refresh', function(req, res) {
 
 function refresh(req, res)
 {
+    console.log("about to refreshToken");
 	if (req.cookies.user && req.cookies.token && req.cookies.refreshToken)
 	{
 	    const obj = {
@@ -117,17 +123,15 @@ function refresh(req, res)
 		 		.then(function(clientResponse)
 		 		{
 		 			console.log("response from fusionauth: ",JSON.stringify(clientResponse, null, 8));
-		 			req.cookies.token = clientResponse.response.token;
-	                req.cookies.refreshToken = clientResponse.response.refreshToken;
-	                req.cookies.save();
-	                console.log("new refreshToken FROM RESPONSE: ",JSON.stringify(clientResponse.response.refreshToken, null, 8));
+                    res.cookie('token', clientResponse.response.token, { httpOnly: true, maxAge: 2592000});
+                    res.cookie('refreshToken', clientResponse.response.refreshToken, { httpOnly: true, maxAge: 2592000});
+                    res.cookie('user', req.cookies.user, { httpOnly: true, maxAge: 2592000});
 		 		})
 		 		.catch(function(error) {
 	                console.log("ERROR: ", JSON.stringify(error, null, 8))
 	            });
 	}
 }
-
 
 function invalidateCookies(req, res, all)
 {
