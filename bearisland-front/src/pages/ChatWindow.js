@@ -46,13 +46,14 @@ const useStyles = makeStyles({
 
 function MessageOriginIsThisEmail(props)
 {
-    console.log("This chat originates from " + props.messageEmail + " and has been opened by " + props.userEmail);
     if(props.messageEmail === props.userEmail)
     {
-        console.log("little grid");
+        // console.log("This message was written by " + props.messageEmail + " and has been opened by " + props.userEmail);
+        // console.log("PUSH message to the right")
         return <Grid item xs={3}></Grid>;
     }
-    console.log("send a PHAT filler grid")
+    // console.log("This message was written by " + props.messageEmail + " and has been opened by " + props.userEmail);
+    
     return <Grid></Grid>;
 }
 
@@ -84,7 +85,7 @@ function     GenerateChat(props) {
     return JSON.parse(props.messages).map((value) =>
         <ListItem key={value._id}>
     {/*can probably clear up the way we decide hgow to format the chat instead of calculating it twice here and MineOrTheirs*/}
-            <MessageOriginIsThisEmail messageEmail={props.email} userEmail={value.email}/>
+            <MessageOriginIsThisEmail messageEmail={value.email} userEmail={props.email}/>
             <Grid key={value._id} item xs={9}>
                 <GridListTile key={value._id} cols={1} rows={1}>
                         <MineOrTheirsPaper value={value} element={props.element} classes={classes} messageEmail={props.email} userEmail={value.email}/>
@@ -101,8 +102,9 @@ class ChatWindow extends React.Component
     constructor(props)
     {
         super(props);
+        console.log("   uuid : " + this.props)
 
-        this.state = {email: this.props.useremail, messages: '', uuid: this.props.match.params.uuid, validId: false, sentMessage: false}
+        this.state = {email: this.props.useremail, messages: '', uuid: this.props.uuid, oldUuid: this.props.uuid, validId: false, sentMessage: false}
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -114,7 +116,7 @@ class ChatWindow extends React.Component
     handleKeyPress(event)
     {
         console.log("PRESSED " + event.charCode )
-        if(event.charCode  == 13 && !event.shiftKey && !event.ctrlKey){
+        if(event.charCode  === 13 && !event.shiftKey && !event.ctrlKey){
             this.handleSubmit(event);
         }
     }
@@ -130,7 +132,7 @@ class ChatWindow extends React.Component
         event.preventDefault();
         var payload = {
             "email": this.state.email,
-            "uuid":this.state.uuid,
+            "uuid":this.props.uuid,
             "message":this.state.message
         }
         axios
@@ -155,47 +157,59 @@ class ChatWindow extends React.Component
 
     getAllMessages()
     {
-        axios
-        .get(config.apiServer + config.serverPort + '/contact/getAllMessages', {
-            params: {
-              uuid: this.state.uuid
-            }
-          })
-        .then(response =>
-            {
-                console.log(JSON.stringify(response));
-                console.log("got convo back successfully " + response);
-                if(response.status === 200)
-                {
-                    this.setState({'messages': JSON.stringify(response.data)});
-                }
-
-                if(!this.state.email)
-                {
-                    if(this.props.email === '')
-                    {
-                        console.log("setting state of email to " + response.data[0].email);
-                        this.setState({email: response.data[0].email});
-                    }
-                    else
-                    {
-                        this.setState({email: this.props.email});
-                    }
-                }
-            })
-        .then(response =>
-        {    
-            this.scrollToMyBottomOfChat();
-        })
-        .catch(err => 
+        if(this.props.uuid)
         {
-            console.error("getting messages failied: " + err);
-        });
+            axios
+            .get(config.apiServer + config.serverPort + '/contact/getAllMessages', {
+                params: {
+                  uuid: this.props.uuid
+                }
+              })
+            .then(response =>
+                {
+                    console.log(JSON.stringify(response));
+                    console.log("got convo back successfully " + response);
+                    if(response.status === 200)
+                    {
+                        this.setState({'messages': JSON.stringify(response.data)});
+                    }
+
+                    if(!this.state.email)
+                    {
+                        if(this.props.email === '')
+                        {
+                            console.log("setting state of email to " + response.data[0].email);
+                            this.setState({email: response.data[0].email});
+                        }
+                        else
+                        {
+                            this.setState({email: this.props.email});
+                        }
+                    }
+                })
+            .then(response =>
+            {    
+                this.scrollToMyBottomOfChat();
+            })
+            .catch(err => 
+            {
+                console.error("getting messages failied: " + err);
+            });
+        }
+    }
+
+    //not sure how I feel about this, but it works - and I learnt something while using it.
+    static getDerivedStateFromProps(nextProps, prevState) {
+        return {
+            uuid: nextProps.uuid,
+            oldUuid: prevState.uuid
+        };
     }
 
     componentDidMount()
     {
         this.getAllMessages();
+        console.log("UUID IS : " + this.props.uuid);
         //mine on the right, there's on the left
     }
 
@@ -209,21 +223,39 @@ class ChatWindow extends React.Component
 
     render()
     {
-        if(!this.state.messages)
+        // if we don't know what conversation to get or there are no messages loaded, we need to try
+        // and get the messages - this will call a re-render for state change if there is a uuid 
+        // and we'll succeed next time. If not, we won't re-render and we'll display the message.
+        if(!this.props.uuid || !this.state.messages)
         {
-            return (<Typography variant="h6">
-                        Bearisland Private Chat - this conversation doesn't exist or has been archived.
-                    </Typography>);
+            this.getAllMessages();
+            return (
+                    <Box my={1}>
+                        <Grid container >
+                            <Typography variant="h6">
+                                {this.props.errorMessage}
+                            </Typography>
+                        </Grid>
+                    </Box>);
+        }
+
+        // the state of uuid changed between a render in the out component - we don't re-render unless
+        // the state changes in this component, that's why we use the getDerivedStateFromProps to get 
+        // the state from the parent component
+        if(this.state.uuid != this.state.oldUuid)
+        {
+            this.getAllMessages();
         }
 
         return (
+            
             <Box my={1}>
                 <Grid container >
                     <Grid item xs={12}>
                         <Typography variant="h6">
                             Bearisland Private Chat
                         </Typography>
-                        <GridList cellHeight={300} cols={1} ref="messageHolder">
+                        <GridList cellHeight={400} cols={1} ref="messageHolder">
                             <List> {/* dense={dense}*/}
                                 <Grid container >
                                     <GenerateChat messages={this.state.messages} element={<ListItemText/>} email={this.state.email}/>

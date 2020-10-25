@@ -82,7 +82,8 @@ router.post('/initialMessage', function(req, res) {
         '_id': newUuid,
         'email': req.body.email,
         'subject': req.body.subject,
-        'message': req.body.message
+        'message': req.body.message,
+        'archive': false
     };
 
     const date = new Date();

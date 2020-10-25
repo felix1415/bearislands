@@ -21,11 +21,12 @@ const MAXAGE = 2592000000;
 
 router.use(cookieParser());
 router.use('/*', (req, res, next) => {
-	validateAdmin(req, res, next);
-});
-router.use('/*', (req, res, next) => {
     refresh(req, res, next);
 });
+router.use('/*', (req, res, next) => {
+	validateAdmin(req, res, next);
+});
+
 
 router.post("/counters", function(req, res) {
     var query = { counterName: req.body.counterName };
@@ -45,15 +46,61 @@ router.post("/counters", function(req, res) {
     res.send("updated counter");
 });
 
+function archiveChat(req, res, archive) {
+    const uuid = req.body.uuid;
+    var filter = { _id: req.body.uuid };
+    var query = { $set: {'archive': archive} };
+    var options = {upsert: true}
+
+    MongoClient.connect(config.mongoInstance, topology, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db(config.mongoDatabase);
+        dbo.collection("conversations").updateOne(filter, query, function(err, res) {
+            if (err) throw err;
+            console.log("1 document with UUID " + req.body.uuid + " updated with " + JSON.stringify(query));
+            db.close();
+        });
+    });
+    res.send("unarchived");
+}
+
+router.post("/archiveChat", function(req, res) {
+    archiveChat(req, res, true);
+});
+
+router.post("/unArchiveChat", function(req, res) {
+    archiveChat(req, res, false);
+});
+
+router.post("/removeChat", function(req, res) {
+    try
+    {
+        MongoClient.connect(config.mongoInstance, topology, function(err, db) {
+            if (err) throw err;
+            var dbo = db.db(config.mongoDatabase);
+            dbo.collection(req.body.uuid).deleteOne();
+            dbo.collection("conversations").deleteOne({"_id": req.body.uuid}, function(err, res) {
+                if (err) throw err;
+                console.log("1 document with UUID " + req.body.uuid + " removed from conversations");
+            });
+          });
+          res.send("delete");
+    }
+    catch(err)
+    {
+        DEBUG_LOG("ERROR: " + err.message);
+        res.send("delete");
+    }
+});
+
 router.get('/getAllConversations', function(req, res) {
-    // const uuid = req.query.uuid;
     console.log("trying for messsages from conversation ");
     try
     {
         MongoClient.connect(config.mongoInstance, topology, function(err, db) {
             if (err) throw err;
             var dbo = db.db(config.mongoDatabase);
-          dbo.collection("conversations").find().toArray(function(err, result) {
+          dbo.collection("conversations").find({archive: false}).toArray(function(err, result) {
             if (err) throw err;
             console.log("documents:" + JSON.stringify(result, null, 4));
             res.send(result);
@@ -64,6 +111,7 @@ router.get('/getAllConversations', function(req, res) {
     catch(err)
     {
         DEBUG_LOG("ERROR: " + err.message);
+        res.send("fuck");
     }
 });
 
@@ -74,7 +122,7 @@ router.get("/getAllArchivedConversations", function(req, res) {
         MongoClient.connect(config.mongoInstance, topology, function(err, db) {
             if (err) throw err;
             var dbo = db.db(config.mongoDatabase);
-          dbo.collection("conversations").find({archived: true}).toArray(function(err, result) {
+          dbo.collection("conversations").find({archive: true}).toArray(function(err, result) {
             if (err) throw err;
             console.log("1 document (" + result);
             res.send(result);
@@ -85,6 +133,7 @@ router.get("/getAllArchivedConversations", function(req, res) {
     catch(err)
     {
         DEBUG_LOG("ERROR: " + err.message);
+        res.send("fuck");
     }
 });
 
@@ -174,7 +223,7 @@ function refresh(req, res, next)
 function forbidden(req, res)
 {
     DEBUG_LOG("forbidden");
-	res.send("403forbidden");
+	res.status(403).send("403forbidden");
 }
 
 function DEBUG_LOG(message)

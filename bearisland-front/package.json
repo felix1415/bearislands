@@ -19,8 +19,9 @@
     "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "latest",
     "react-iframe": "^1.8.0",
+    "react-redux": "^7.2.1",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "latest",
+    "react-scripts": "^4.0.0",
     "react-window": "^1.8.5"
   },
   "browserslist": {

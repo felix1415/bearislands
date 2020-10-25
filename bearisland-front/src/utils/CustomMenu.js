@@ -62,7 +62,6 @@ class CustomizedMenus extends React.Component
   handleClick(event)
   {
     event.preventDefault();
-    console.log("HELLO IVE BEEN")
     this.setState({ anchorEl: event.currentTarget });
   };
 

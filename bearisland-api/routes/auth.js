@@ -52,6 +52,7 @@ router.post('/login', function(req, res) {
             'password': req.body.password,
             'applicationId': config.applicationId
         };
+        console.log("obj: " + JSON.stringify(obj));
         client.login(obj)
             .then(function(clientResponse) {
                 // console.log("response from fusionauth: ",JSON.stringify(clientResponse, null, 8));
@@ -82,56 +83,31 @@ router.use(function (err, req, res, next) {
 })
 
 
-router.get('/profile', function(req, res) {
-    if (!req.cookies.user) {
-        res.send("Login required");
-    } else {
-    	// client.retrieveRefreshTokens(req.cookies.user.id)
-	    // 	.then(function(clientResponse) {
-	    //             console.log("retrieveRefreshTokens", JSON.stringify(clientResponse, null, 8));
-	    //         })
-	    //         .catch(function(error) {
-	    //             console.log("ERROR: ", JSON.stringify(error, null, 8))
-	    //         });
+// router.get('/refresh', function(req, res) {
+// 	refresh(req, res);
+// });
 
-
-    	// client.validateJWT(req.cookies.token)
-	    // 	.then(function(clientResponse) {
-	    //             console.log("validateJWT",JSON.stringify(clientResponse, null, 8));
-	    //         })
-	    //         .catch(function(error) {
-	    //             console.log("ERROR: ", JSON.stringify(error, null, 8))
-	    //         });
-        res.send("Profile");
-    }
-});
-
-
-router.get('/refresh', function(req, res) {
-	refresh(req, res);
-});
-
-function refresh(req, res)
-{
-    console.log("about to refreshToken");
-	if (req.cookies.user && req.cookies.token && req.cookies.refreshToken)
-	{
-	    const obj = {
-	        'refreshToken': req.cookies.refreshToken
-	    };
-		 client.exchangeRefreshTokenForJWT(obj)
-		 		.then(function(clientResponse)
-		 		{
-		 			console.log("response from fusionauth: ",JSON.stringify(clientResponse, null, 8));
-                    res.cookie('token', clientResponse.response.token, { httpOnly: true, maxAge: 2592000});
-                    res.cookie('refreshToken', clientResponse.response.refreshToken, { httpOnly: true, maxAge: 2592000});
-                    res.cookie('user', req.cookies.user, { httpOnly: true, maxAge: 2592000});
-		 		})
-		 		.catch(function(error) {
-	                console.log("ERROR: ", JSON.stringify(error, null, 8))
-	            });
-	}
-}
+// function refresh(req, res)
+// {
+//     console.log("about to refreshToken");
+// 	if (req.cookies.user && req.cookies.token && req.cookies.refreshToken)
+// 	{
+// 	    const obj = {
+// 	        'refreshToken': req.cookies.refreshToken
+// 	    };
+// 		 client.exchangeRefreshTokenForJWT(obj)
+// 		 		.then(function(clientResponse)
+// 		 		{
+// 		 			console.log("response from fusionauth: ",JSON.stringify(clientResponse, null, 8));
+//                     res.cookie('token', clientResponse.response.token, { httpOnly: true, maxAge: 2592000});
+//                     res.cookie('refreshToken', clientResponse.response.refreshToken, { httpOnly: true, maxAge: 2592000});
+//                     res.cookie('user', req.cookies.user, { httpOnly: true, maxAge: 2592000});
+// 		 		})
+// 		 		.catch(function(error) {
+// 	                console.log("ERROR: ", JSON.stringify(error, null, 8))
+// 	            });
+// 	}
+// }
 
 function invalidateCookies(req, res, all)
 {

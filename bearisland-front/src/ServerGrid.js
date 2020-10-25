@@ -65,7 +65,6 @@ const useStyles = makeStyles({
  */
 export default function ServerGridList() {
   const classes = useStyles();
-  // const preventDefault = (event) => event.preventDefault();
 
   //do some on click for the image and for the info icon - diff stuff on each
 

@@ -22,6 +22,7 @@ const theme = createMuiTheme({
     },
     text: {
       primary: '#eeeeee',
+      secondary: '#8c8c8c'
     },
   },
 });

@@ -129,6 +129,7 @@ class MainBar extends React.Component
             </Route>
             <Route path="/contact/:uuid" render={({match}) => (
                     <ChatWindow
+                      errorMessage={"Bearislands Private Chat - this conversation doesn't exist or has been deleted."} 
                       uuid={match.params.uuid}
                       email={this.state.email}
                     />
@@ -143,7 +144,7 @@ class MainBar extends React.Component
               <Logout setLoggedInCallback={this.setLoggedIn} loggedIn={this.state.loggedIn} />
             </Route>
             <Route exact path="/admin">
-              <Admin loggedIn={this.state.loggedIn} />
+              <Admin loggedIn={this.state.loggedIn} email={this.state.email}/>
             </Route>
           </Switch>
         </div>

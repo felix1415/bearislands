@@ -10,11 +10,10 @@ import ConversationComp from '../pages/ConversationComp'
 
 class Admin extends React.Component
 {
-    // constructor(props)
-    // {
-    //     super(props);
-
-    // }
+    constructor(props)
+    {
+        super(props);
+    }
 
     render()
     {
@@ -29,11 +28,10 @@ class Admin extends React.Component
             </Typography>
                     <Grid container spacing={4}>
                         <Grid item xs={12}>
-                            Counters
                             <PageCounter read={true}/>
                         </Grid>
                         <Grid item xs={12}>
-                            <ConversationComp />
+                            <ConversationComp email={this.props.email}/>
                         </Grid>
                     </Grid>
             </Box>

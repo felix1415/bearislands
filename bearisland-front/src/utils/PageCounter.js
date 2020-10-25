@@ -68,14 +68,11 @@ class PageCounter extends React.Component
         }
         return (
             <Box my={4}>
-            <Typography variant="h6" gutterBottom>
-                    Admin Dashboard
-            </Typography>
-                    <Grid container spacing={4}>
-                        <Grid item xs={12}>
-                            Counters
-                        </Grid>
+                <Grid container spacing={4}>
+                    <Grid item xs={12}>
+                        Counters - none added yet.
                     </Grid>
+                </Grid>
             </Box>
         );
     }

@@ -12,6 +12,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
 import Button from "@material-ui/core/Button";
 import ChatWindow from './ChatWindow';
+import ConversationControlBar from './ConversationControlBar';
 // import Button from '@material-ui/core/Button';
 // import TextField from '@material-ui/core/TextField';
 // import TextareaAutosize from '@material-ui/core/TextareaAutosize';
@@ -20,28 +21,6 @@ import axios from 'axios';
 
 const config = require('../config');
 
-const useStyles = makeStyles({
-  mine: {
-    background: 'linear-gradient(45deg, #3b59F8 30%, #3b59ff 90%)',
-    border: 0,
-    borderRadius: 10,
-    boxShadow: '0 3px 5px 2px rgba(66, 103, 178, .3)',
-    color: 'white',
-    padding: '0 10px',
-    wordWrap: 'break-word',
-  },
-  theirs: {
-    background: 'linear-gradient(45deg, #202020 30%, #202020 90%)',
-    border: 0,
-    borderRadius: 10,
-    boxShadow: '0 3px 5px 2px rgba(66, 103, 178, .3)',
-    color: 'white',
-    secondary: 'red',
-    padding: '0 10px',
-    wordWrap: 'break-word',
-  },
-});
-
 class ConversationComp extends React.Component
 {
 
@@ -49,20 +28,65 @@ class ConversationComp extends React.Component
     {
         super(props);
 
-        this.state = {conversations: ''}
+        this.state = {conversations: '', uuid: '', showArchivedMessages: false, archiveThisChat: false}
 
-        this.handleChange = this.handleChange.bind(this);
+        this.handleListItemClick = this.handleListItemClick.bind(this);
         this.getAllConversations = this.getAllConversations.bind(this);
+        this.swapLists = this.swapLists.bind(this);
+        this.archiveCall = this.archiveCall.bind(this);
+        this.archiveChat = this.archiveChat.bind(this);
+        this.unArchiveChat = this.unArchiveChat.bind(this);
+        this.deleteChat = this.deleteChat.bind(this);
+        this.sendReminder = this.sendReminder.bind(this);
     }
 
-    handleChange (event) {
-        this.setState({ [event.target.name]: event.target.value });
+    handleListItemClick(event, uuidIn, archive)
+    {
+        event.preventDefault();
+        this.setState({'uuid': uuidIn});
+        this.setState({'archiveThisChat': archive});
+        this.getAllConversations();
+        // this.set
+    }
+
+    //currentTarget from material ui buttons
+    swapLists(event)
+    {
+        console
+        event.preventDefault(); 
+        this.setState({'uuid': ''});
+        this.setState({'archiveThisChat': false});
+        if(event.currentTarget.value === "archived")
+        {
+            this.setState({'showArchivedMessages': true}, () => { this.getAllConversations(); })
+        }
+        else
+        {
+            this.setState({'showArchivedMessages': false}, () => { this.getAllConversations(); })
+        }
+
+        // this.getAllConversations();
     }
 
     getAllConversations()
     {
+        console.log("Getting conversations")
+        var apiMethod = '/admin/';
+
+        if(this.state.showArchivedMessages)
+        {
+            console.log("getting archived conversations");
+            apiMethod = apiMethod.concat("getAllArchivedConversations");
+        }
+        else
+        {
+            apiMethod = apiMethod.concat("getAllConversations");
+        }
+
+        console.log(apiMethod)
+
         axios
-        .get(config.apiServer + config.serverPort + '/admin/getAllConversations')
+        .get(config.apiServer + config.serverPort + apiMethod, {withCredentials: true})
         .then(response =>
             {
                 console.log(JSON.stringify(response));
@@ -78,10 +102,82 @@ class ConversationComp extends React.Component
         });
     }
 
+    archiveCall(archive)
+    {
+        var payload = {
+            "uuid":this.state.uuid,
+        }
+
+        var apiMethod = '/admin/';
+
+        if(archive)
+        {
+            apiMethod = apiMethod.concat("archiveChat");
+        }
+        else
+        {
+            apiMethod = apiMethod.concat("unArchiveChat");
+        }
+
+        axios
+        .post(config.apiServer + config.serverPort + apiMethod, payload, {withCredentials: true})
+        .then(response =>
+        {
+            if(response.status === 200)
+            {
+                console.log("sent message successfully " + response.status);
+                // this.getAllConversations();
+            }
+        })
+        .catch(err => 
+        {
+            console.error("sending message failied: " + err);
+        }); 
+    }
+
+    archiveChat()
+    {
+        this.setState({'archiveThisChat': true}, () => { this.archiveCall(true); });
+        //send command
+    }
+
+    unArchiveChat()
+    {
+        this.setState({'archiveThisChat': false}, () => { this.archiveCall(false); });
+        //send command
+    }
+
+    deleteChat()
+    {
+        var payload = {
+            "uuid":this.state.uuid,
+        }
+        
+        axios
+        .post(config.apiServer + config.serverPort + '/admin/removeChat', payload, {withCredentials: true})
+        .then(response =>
+        {
+            if(response.status === 200)
+            {
+                console.log("sent message successfully " + response.status);
+            }
+        })
+        .catch(err => 
+        {
+            console.error("sending message failied: " + err);
+        }); 
+        this.setState({'uuid': ''});
+        this.setState({'archiveThisChat': false}, () => { this.getAllConversations(false); });
+    }
+
+    sendReminder()
+    {
+        //send command
+    }
+
     componentDidMount()
     {
         this.getAllConversations();
-        //mine on the right, there's on the left
     }
 
     render()
@@ -96,11 +192,61 @@ class ConversationComp extends React.Component
         return (
             <Box my={1}>
                 <Grid container spacing={4}>
+                    <Grid item xs={12}>
+                        <Grid container spacing={4}>
+                            <Grid item xs={2}>
+                                <Button variant="contained" value="archived" onClick={this.swapLists}>View Archived Messages</Button>
+                            </Grid>
+                            <Grid item xs={2}>
+                                <Button variant="contained" value="current" onClick={this.swapLists}>View Current Messages</Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
                     <Grid item xs={4}>
-                        Message List
+                        <List component="nav" aria-label="conversation selector">
+                            {JSON.parse(this.state.conversations).map((convo) => (
+                                <ListItem button key={convo._id} onClick={(event) => this.handleListItemClick(event, convo._id, convo.archive)} >
+                                    <ListItemText primary={
+                                                           <React.Fragment>
+                                                               <Typography
+                                                                variant="h6"
+                                                                color="texPrimary"
+                                                              >
+                                                                {convo.subject}
+                                                              </Typography>
+                                                          </React.Fragment>} 
+                                                  secondary={
+                                                          <React.Fragment>
+                                                              <Typography
+                                                                variant="body1"
+                                                                color="textSecondary"
+                                                              >
+                                                                {convo.email}
+                                                              </Typography>
+
+                                                              <Typography
+                                                                variant="body2"
+                                                                color="textSecondary"
+                                                                noWrap="true"
+                                                              >
+                                                                {convo.message}
+                                                              </Typography>
+                                                        </React.Fragment>
+                                                            }
+                                    />
+                                </ListItem>
+                            ))}
+                        </List>
                     </Grid>
                     <Grid item xs={8}>
-                        <ChatWindow />
+                        <ChatWindow errorMessage={"No chat selected"} uuid={this.state.uuid} email={this.props.email}/>
+                        <ConversationControlBar uuid={this.state.uuid} 
+                                                chatIsArchived={this.state.archiveThisChat}
+                                                archiveChatCallback={this.archiveChat}
+                                                unArchiveChatCallback={this.unArchiveChat}
+                                                deleteChatCallback={this.deleteChat}
+                                                sendReminderChatCallback={this.sendReminder}
+                                                />
                     </Grid>
                 </Grid>
             </Box>
