@@ -13,6 +13,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from "@material-ui/core/Button";
 import ChatWindow from './ChatWindow';
 import ConversationControlBar from './ConversationControlBar';
+import Snackbar from '@material-ui/core/Snackbar';
 // import Button from '@material-ui/core/Button';
 // import TextField from '@material-ui/core/TextField';
 // import TextareaAutosize from '@material-ui/core/TextareaAutosize';
@@ -28,7 +29,7 @@ class ConversationComp extends React.Component
     {
         super(props);
 
-        this.state = {conversations: '', uuid: '', showArchivedMessages: false, archiveThisChat: false}
+        this.state = {conversations: '', uuid: '', showArchivedMessages: false, archiveThisChat: false, openSnack: false, userEmail:''}
 
         this.handleListItemClick = this.handleListItemClick.bind(this);
         this.getAllConversations = this.getAllConversations.bind(this);
@@ -37,7 +38,19 @@ class ConversationComp extends React.Component
         this.archiveChat = this.archiveChat.bind(this);
         this.unArchiveChat = this.unArchiveChat.bind(this);
         this.deleteChat = this.deleteChat.bind(this);
-        this.sendReminder = this.sendReminder.bind(this);
+        this.sendReminder = this.sendReminder.bind(this);       
+        this.closeSnackbar = this.closeSnackbar.bind(this);
+        this.setUserEmail = this.setUserEmail.bind(this);
+    }
+
+    closeSnackbar (event, reason)
+    {
+        this.setState({openSnack: false});
+    }
+
+    setUserEmail(userEmailIn)
+    {
+        this.setState({userEmail: userEmailIn});
     }
 
     handleListItemClick(event, uuidIn, archive)
@@ -172,6 +185,9 @@ class ConversationComp extends React.Component
 
     sendReminder()
     {
+        this.setState({openSnack: true});
+        console.log("HELLO")
+        //snackbar
         //send command
     }
 
@@ -239,16 +255,23 @@ class ConversationComp extends React.Component
                         </List>
                     </Grid>
                     <Grid item xs={8}>
-                        <ChatWindow errorMessage={"No chat selected"} uuid={this.state.uuid} email={this.props.email}/>
+                        <ChatWindow errorMessage={"No chat selected"} uuid={this.state.uuid} email={this.props.email} setUserEmailCallback={this.setUserEmail}/>
                         <ConversationControlBar uuid={this.state.uuid} 
                                                 chatIsArchived={this.state.archiveThisChat}
                                                 archiveChatCallback={this.archiveChat}
                                                 unArchiveChatCallback={this.unArchiveChat}
                                                 deleteChatCallback={this.deleteChat}
-                                                sendReminderChatCallback={this.sendReminder}
+                                                sendReminderCallback={this.sendReminder}
                                                 />
                     </Grid>
                 </Grid>
+                <Snackbar
+                  autoHideDuration={5000}
+                  open={this.state.openSnack}
+                  onClose={this.closeSnackbar}
+                  message={"Sent email to user " + this.state.userEmail + " to notify them of new messages"}
+                />
+
             </Box>
         );
     }

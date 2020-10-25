@@ -80,7 +80,6 @@ function MineOrTheirsPaper(props)
 }
 
 function     GenerateChat(props) {
-    console.log("CHAT OPENED WITH EMAIL:@ " + props.email);
     const classes = useStyles();
     return JSON.parse(props.messages).map((value) =>
         <ListItem key={value._id}>
@@ -172,6 +171,8 @@ class ChatWindow extends React.Component
                     if(response.status === 200)
                     {
                         this.setState({'messages': JSON.stringify(response.data)});
+                        this.setState({'userEmail': response.data[0].email});
+                        this.props.setUserEmailCallback(response.data[0].email);
                     }
 
                     if(!this.state.email)
@@ -253,7 +254,7 @@ class ChatWindow extends React.Component
                 <Grid container >
                     <Grid item xs={12}>
                         <Typography variant="h6">
-                            Bearisland Private Chat
+                            Bearisland Private Chat with {this.state.userEmail}
                         </Typography>
                         <GridList cellHeight={400} cols={1} ref="messageHolder">
                             <List> {/* dense={dense}*/}
