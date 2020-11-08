@@ -98,7 +98,7 @@ export default function Rust() {
 				  					<li>No abusive behaviour including Racism, Extremism - or any of the other bad isms</li>
 				  					<li>No Building Inside, or Blocking Off Monuments - Including Quarries</li>
 				  					<li>No giving Bases or main loot away</li>
-				  					<li>Max 4 Players per Group. Please report any abuse alongside video/screenshot evidence to EMAILLINKHERE</li>
+				  					<li>Max 4 Players per Group. Please report any abuse alongside video/screenshot evidence using our contact form</li>
 			  					</ul>
 				  			</Typography>
 				  		</Grid>

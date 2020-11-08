@@ -172,7 +172,10 @@ class ChatWindow extends React.Component
                     {
                         this.setState({'messages': JSON.stringify(response.data)});
                         this.setState({'userEmail': response.data[0].email});
-                        this.props.setUserEmailCallback(response.data[0].email);
+                        if(this.props.setUserEmailCallback)
+                        {
+                            this.props.setUserEmailCallback(response.data[0].email);
+                        }
                     }
 
                     if(!this.state.email)

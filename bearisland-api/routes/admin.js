@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 const config = require('../config');
 const auth = require('./auth');
+const { v4: uuidv4 } = require('uuid');
 
 var FusionAuth = require('@fusionauth/typescript-client');
 
@@ -97,44 +98,78 @@ router.post("/sendReminder", function(req, res) {
     userPromise = getUser(req.body.email);
 
     userPromise.then(function(clientResponse) {
-        const obj =
-        {
-            'requestData':
-            {
-                'uuid': req.body.uuid
-            },
-            'userIds': [
-                clientResponse.response.user.id
-              ]            
-        }
-        console.log(JSON.stringify(obj, null, 8));
-        console.log("EmailTemplate: " + config.SendReminderToPlayer);
-
-        DEBUG_LOG("user " + clientResponse.response.user.email + " is a user about to recieve an email");
-        client.sendEmail(config.SendReminderToPlayer, obj)
-        .then(function(clientResponse) {
-                console.log("sendEmail responseStatus: ",JSON.stringify(clientResponse, null, 8));
-                res.send("sent");
-        })
-        .catch(function(error) {
-            console.log("failed to send email via fusionauth");
-            console.log("ERROR: ", JSON.stringify(error, null, 8));
-            res.status(401).send("error");
-            return;
-        });
-
+        sendReminder(req, res, clientResponse);
     })
     .catch(function(error) {
-        console.log("failed to get user from fusionauth");
-        console.log("ERROR: ", JSON.stringify(error, null, 8));
-        res.status(401).send("error");
+        console.log("user is not created yet - creating");
+        createUserPromise = createUser(req.body.email);
+        createUserPromise.then(function(clientResponse) {
+            sendReminder(req, res, clientResponse);
+        })
+        .catch(function(error) {
+            console.log("failed to create user in fusionauth");
+            console.log("ERROR: ", JSON.stringify(error, null, 8));
+            res.status(401).send("error");
+        });
     });
 
 });
 
+function sendReminder(req, res, clientResponse)
+{
+    const obj =
+    {
+        'requestData':
+        {
+            'uuid': req.body.uuid
+        },
+        'userIds': [
+            clientResponse.response.user.id
+          ]            
+    }
+    console.log(JSON.stringify(obj, null, 8));
+    console.log("EmailTemplate: " + config.SendReminderToPlayer);
+
+    DEBUG_LOG("user " + clientResponse.response.user.email + " is a user about to recieve an email");
+    client.sendEmail(config.SendReminderToPlayer, obj)
+    .then(function(clientResponse) {
+            console.log("sendEmail responseStatus: ",JSON.stringify(clientResponse, null, 8));
+            res.send("sent");
+    })
+    .catch(function(error) {
+        console.log("failed to send email via fusionauth");
+        console.log("ERROR: ", JSON.stringify(error, null, 8));
+        res.status(401).send("error");
+    });
+}
+
+function createUser(email)
+{
+    const newUuid = uuidv4();
+    const obj = {
+        'tenantId': config.tenantId,
+        'user': {
+            'email': email,
+            'skipVerification': true,
+            'password': newUuid
+        }
+    };
+    let promise = client.createUser(newUuid, obj)
+    .then(function(clientResponse) {
+            console.log("getUser responseStatus: ",JSON.stringify(clientResponse.statusCode, null, 8));
+
+            return clientResponse;
+    })
+    .catch(function(error) {
+        console.log("failed to getUser")
+        console.log("ERROR: ", JSON.stringify(error, null, 8));
+    });
+
+    return promise;
+}
+
 function getUser(email)
 {
-    let returnPromise;
     let promise = client.retrieveUserByEmail(email)
     .then(function(clientResponse) {
             console.log("getUser responseStatus: ",JSON.stringify(clientResponse.statusCode, null, 8));
@@ -142,7 +177,6 @@ function getUser(email)
             return clientResponse;
     })
     .catch(function(error) {
-        returnPromise =
         console.log("failed to getUser")
         console.log("ERROR: ", JSON.stringify(error, null, 8));
     });
