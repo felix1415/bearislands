@@ -20,9 +20,9 @@ const MongoClient = require('mongodb').MongoClient
 const MAXAGE = 2592000000;
 
 router.use(cookieParser());
-router.use('/*', (req, res, next) => {
-    refresh(req, res, next);
-});
+// router.use('/*', (req, res, next) => {
+//     refresh(req, res, next);
+// });
 router.use('/*', (req, res, next) => {
 	validateAdmin(req, res, next);
 });
@@ -75,7 +75,7 @@ router.post("/unArchiveChat", function(req, res) {
 router.post("/removeChat", function(req, res) {
     try
     {
-        MongoClient.connect(config.mongoInstance, topology, function(err, db) {
+            MongoClient.connect(config.mongoInstance, topology, function(err, db) {
             if (err) throw err;
             var dbo = db.db(config.mongoDatabase);
             dbo.collection(req.body.uuid).deleteOne();
@@ -92,6 +92,63 @@ router.post("/removeChat", function(req, res) {
         res.send("delete");
     }
 });
+
+router.post("/sendReminder", function(req, res) {
+    userPromise = getUser(req.body.email);
+
+    userPromise.then(function(clientResponse) {
+        const obj =
+        {
+            'requestData':
+            {
+                'uuid': req.body.uuid
+            },
+            'userIds': [
+                clientResponse.response.user.id
+              ]            
+        }
+        console.log(JSON.stringify(obj, null, 8));
+        console.log("EmailTemplate: " + config.SendReminderToPlayer);
+
+        DEBUG_LOG("user " + clientResponse.response.user.email + " is a user about to recieve an email");
+        client.sendEmail(config.SendReminderToPlayer, obj)
+        .then(function(clientResponse) {
+                console.log("sendEmail responseStatus: ",JSON.stringify(clientResponse, null, 8));
+                res.send("sent");
+        })
+        .catch(function(error) {
+            console.log("failed to send email via fusionauth");
+            console.log("ERROR: ", JSON.stringify(error, null, 8));
+            res.status(401).send("error");
+            return;
+        });
+
+    })
+    .catch(function(error) {
+        console.log("failed to get user from fusionauth");
+        console.log("ERROR: ", JSON.stringify(error, null, 8));
+        res.status(401).send("error");
+    });
+
+});
+
+function getUser(email)
+{
+    let returnPromise;
+    let promise = client.retrieveUserByEmail(email)
+    .then(function(clientResponse) {
+            console.log("getUser responseStatus: ",JSON.stringify(clientResponse.statusCode, null, 8));
+
+            return clientResponse;
+    })
+    .catch(function(error) {
+        returnPromise =
+        console.log("failed to getUser")
+        console.log("ERROR: ", JSON.stringify(error, null, 8));
+    });
+
+    return promise;
+}
 
 router.get('/getAllConversations', function(req, res) {
     console.log("trying for messsages from conversation ");
@@ -111,7 +168,7 @@ router.get('/getAllConversations', function(req, res) {
     catch(err)
     {
         DEBUG_LOG("ERROR: " + err.message);
-        res.send("fuck");
+        res.send("error");
     }
 });
 
@@ -133,7 +190,7 @@ router.get("/getAllArchivedConversations", function(req, res) {
     catch(err)
     {
         DEBUG_LOG("ERROR: " + err.message);
-        res.send("fuck");
+        res.send("error");
     }
 });
 
@@ -150,7 +207,7 @@ router.get("/getAllArchivedConversations", function(req, res) {
 // 	}
 // 	else
 // 	{
-// 		console.log("fuck no");
+// 		console.log("no");
 // 	}
 // }
 
@@ -173,19 +230,21 @@ function validateAdmin(req, res, next) {
 	    				DEBUG_LOG("checking if role " + role + " is allowed access");
 						if(role.toUpperCase().includes('MOD') )
 						{
-							DEBUG_LOG("user " + req.cookies.user.email + " is admin");
-							next();
-							return;
+							DEBUG_LOG("user " + req.cookies.user.id + " is admin");
+                            refresh(req, res, next);
+                            return;
+							// next();
 						}
+
 					}
 					DEBUG_LOG(req.cookies.user.id + " is not admin, returning forbidden");
 					forbidden(req, res);
-					return;
             })
     		.catch(function(error) {
-                console.log("Something bad happened - check")
+                console.log("vaild to validate jwt")
                 console.log("ERROR: ", JSON.stringify(error, null, 8));
                 refresh(req, res, next);
+                // res.status(401).send("error");
             });
     }
 }
@@ -202,7 +261,7 @@ function refresh(req, res, next)
         client.exchangeRefreshTokenForJWT(obj)
             .then(function(clientResponse)
             {
-                DEBUG_LOG("response from fusionauth: ",JSON.stringify(clientResponse, null, 8));
+                DEBUG_LOG("response from fusionauth: ",JSON.stringify(clientResponse.statusCode, null, 8));
                 res.cookie('token', clientResponse.response.token, { httpOnly: true, maxAge: MAXAGE});
                 res.cookie('refreshToken', clientResponse.response.refreshToken, { httpOnly: true, maxAge: MAXAGE});
                 res.cookie('user', req.cookies.user, { httpOnly: true, maxAge: MAXAGE});

@@ -139,7 +139,7 @@ class ConversationComp extends React.Component
             if(response.status === 200)
             {
                 console.log("sent message successfully " + response.status);
-                // this.getAllConversations();
+                this.getAllConversations();
             }
         })
         .catch(err => 
@@ -165,7 +165,7 @@ class ConversationComp extends React.Component
         var payload = {
             "uuid":this.state.uuid,
         }
-        
+        console.log("calling remove @@@@");
         axios
         .post(config.apiServer + config.serverPort + '/admin/removeChat', payload, {withCredentials: true})
         .then(response =>
@@ -173,20 +173,39 @@ class ConversationComp extends React.Component
             if(response.status === 200)
             {
                 console.log("sent message successfully " + response.status);
+                this.setState({'uuid': ''});
+                this.setState({'archiveThisChat': false}, () => { this.getAllConversations(); });
             }
         })
         .catch(err => 
         {
             console.error("sending message failied: " + err);
         }); 
-        this.setState({'uuid': ''});
-        this.setState({'archiveThisChat': false}, () => { this.getAllConversations(false); });
+
     }
 
     sendReminder()
     {
-        this.setState({openSnack: true});
-        console.log("HELLO")
+        var payload = {
+            "uuid":this.state.uuid,
+            "email":this.state.userEmail,
+        }
+
+        axios
+        .post(config.apiServer + config.serverPort + '/admin/sendReminder', payload, {withCredentials: true})
+        .then(response =>
+        {
+            if(response.status === 200 || response.status === 202)
+            {
+                console.log("sent message successfully " + response.status);
+                this.setState({openSnack: true});
+            }
+        })
+        .catch(err => 
+        {
+            console.error("sending message failied: " + err);
+        }); 
+        
         //snackbar
         //send command
     }
@@ -266,7 +285,7 @@ class ConversationComp extends React.Component
                     </Grid>
                 </Grid>
                 <Snackbar
-                  autoHideDuration={5000}
+                  autoHideDuration={2000}
                   open={this.state.openSnack}
                   onClose={this.closeSnackbar}
                   message={"Sent email to user " + this.state.userEmail + " to notify them of new messages"}

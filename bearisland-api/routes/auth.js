@@ -28,14 +28,7 @@ router.get('/logout', function(req, res) {
 
 router.get('/logoutall', function(req, res) {
     invalidateCookies(req, res, true);
-    // client.logout(true, req.session.refreshToken);
-    // res.cookie('token', {maxAge: 0});
-    // res.cookie('refreshToken', {maxAge: 0});
-    // res.cookie('user', {maxAge: 0});
-    // res.send("Successfully logged out all refreshTokens");
 });
-
-
 
 router.get('/reqprint', function(req, res) {   
 	console.log('email: ', req.cookies.email); 
