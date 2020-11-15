@@ -5,6 +5,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import Grid from '@material-ui/core/Grid';
 import axios from 'axios';
 
 const config = require('../config');
@@ -89,30 +90,32 @@ class Contact extends React.Component
 		        <div/>
 		        <br/>
 
-	            <form onSubmit={this.handleSubmit}>
-					<TextField
-						name="email"
-						label="Email"
-				    	onChange={this.handleChange}
-				     />
-				   	<br/>
-				   	<br/>
-				   	<TextField
-				   		name="subject"
-				   		label="Subject"c  
-				    	onChange={this.handleChange}
-				       />
-				    <br/>
-				    <br/>
-				    <TextareaAutosize name="message" aria-label="minimum height" rowsMin={3} placeholder="Message" onChange={this.handleChange} />
-				    <br/>
-					<Button type="submit" variant="contained" label="Submit" primary="true">Submit </Button>
-				</form>
+		        <Grid container spacing={4}>
+		            <form onSubmit={this.handleSubmit}>
+						<TextField
+							name="email"
+							label="Email"
+					    	onChange={this.handleChange}
+					     />
+					   	<br/>
+					   	<br/>
+					   	<TextField
+					   		name="subject"
+					   		label="Subject"c  
+					    	onChange={this.handleChange}
+					       />
+					    <br/>
+					    <br/>
+					    <TextareaAutosize name="message" aria-label="minimum height" rowsMin={4}  placeholder="Message" onChange={this.handleChange} />
+					    <br/>
+						<Button type="submit" variant="contained" label="Submit" primary="true">Submit </Button>
+					</form>
+				</Grid>
 
 
-		        <CopyToClipboard text="BearPatrol.BearIsland@Gmail.com">
+		        {/*<CopyToClipboard text="BearPatrol.BearIsland@Gmail.com">
 	            	<Button>Copy email to clipboard</Button>
-	          </CopyToClipboard>
+	          </CopyToClipboard>*/}
 		    </Box>
 		);
 	}

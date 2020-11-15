@@ -93,9 +93,10 @@ class MainBar extends React.Component
                   <Link component={RLink} to="/" variant="button" color="textPrimary" href="#" className={classes.link} >
                     Home
                   </Link>
+                  {/*
                   <Link component={RLink} to="/dayz" variant="button" color="textPrimary" href="#" className={classes.link} >
                     DayZ
-                  </Link>
+                  </Link>*/}
                   <Link component={RLink} to="/rust" variant="button" color="textPrimary" href="#" className={classes.link}>
                     Rust
                   </Link>
@@ -121,9 +122,9 @@ class MainBar extends React.Component
             <Route exact path="/">
               <Home />
             </Route>
-            <Route exact path="/dayz">
+            {/*<Route exact path="/dayz">
               <DayZ />
-            </Route>
+            </Route>*/}  
             <Route exact path="/rust">
               <Rust />
             </Route>
