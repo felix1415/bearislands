@@ -65,7 +65,6 @@ class ConversationComp extends React.Component
     //currentTarget from material ui buttons
     swapLists(event)
     {
-        console
         event.preventDefault(); 
         this.setState({'uuid': ''});
         this.setState({'archiveThisChat': false});
