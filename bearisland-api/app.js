@@ -9,8 +9,30 @@ var session = require('express-session');
 var csrfTokens = require('csrf')
 const config = require('../config'); //local
 
+const http = require('http');
+const https = require('https');
+const fs = require('fs');
+
 var allowedOrigins = ['http://localhost:3000',
-                      'http://bearislands.com'];
+                      'http://bearislands.com',
+                      'https://bearislands.com'];
+
+let tempCredentials;
+// Certificate
+if(config.PRODUCTION)
+{
+  const privateKey = fs.readFileSync('/etc/letsencrypt/live/' + config.websiteName + '/privkey.pem', 'utf8');
+  const certificate = fs.readFileSync('/etc/letsencrypt/live/bearislands.com/cert.pem', 'utf8');
+  const ca = fs.readFileSync('/etc/letsencrypt/live/bearislands.com/chain.pem', 'utf8');
+
+  tempCredentials = {
+    key: privateKey,
+    cert: certificate,
+    ca: ca
+  };
+}
+
+const credentials = tempCredentials;
 
 var FusionAuth = require('@fusionauth/typescript-client');
 const client = new FusionAuth.FusionAuthClient(
@@ -29,12 +51,6 @@ const csrfProtection = csrfTokens({
   cookie: true
 });
 
-// app.use(csrfProtection);
-
-// app.get('/csrf-token', (req, res) => {
-//   res.json({ csrfToken: req.csrfToken() });
-// });
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -45,20 +61,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
-
-// configure sessions - DO NOT USE IN PRODUCTION - SEE https://www.npmjs.com/package/express-session
-// app.use(session(
-//   {
-//     secret: '092dbedc-30af-4149-9c61-b578f2c72f59',
-//     resave: false,
-//     saveUninitialized: false,
-//     // cookie: {
-//     // //   secure: 'auto',
-//     //   httpOnly: true,
-//     // //   maxAge: 3600000
-//     // }
-//   })
-// );
 
 app.use(cors({
   origin: function(origin, callback){
@@ -98,6 +100,22 @@ app.use(function(err, req, res, next) {
 
 //disable caching
 app.disable('etag');  //app.set('etag', false); // turn off
+
+app.use((req, res) => {
+  res.send('Hello there !');
+});
+
+// Starting both http & https servers
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
+
+httpServer.listen(config.httpServerPort, () => {
+  console.log('HTTP Server running on port ' + config.httpServerPort);
+});
+
+httpsServer.listen(config.httpsServerPort, () => {
+  console.log('HTTPS Server running on port ' + config.httpsServerPort);
+});
 
 // app.listen(config.serverPort, () => console.log(`FusionAuth example app listening on port ${config.serverPort}.`));
 // console.log('FusionAuth example app listening on port');

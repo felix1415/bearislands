@@ -178,12 +178,6 @@ export default function Rust() {
 				  			<Typography variant="body2" className={classes.tab}>
 				  				If you think someone is cheating try and record it either with video capture or screenshots, we review all cases dilligently and ban players we think are certain of cheating. We won't ban players that are 'suspect' without hard evidence against them.
 				  			</Typography>
-				  			<Typography variant="h5">
-				  				I think someone is cheating, what should I do
-				  			</Typography>
-				  			<Typography variant="body2" className={classes.tab}>
-				  				If you think someone is cheating try and record it either with video capture or screenshots, we review all cases dilligently and ban players we think are certain of cheating. We won't ban players that are 'suspect' without hard evidence against them.
-				  			</Typography>
 				  		</Grid>
 						<Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
 							<ResponsiveImage src={deadak} alt="kitten2" width="711" height="400" />
