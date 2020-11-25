@@ -9,30 +9,30 @@ var session = require('express-session');
 var csrfTokens = require('csrf')
 const config = require('../config'); //local
 
-const http = require('http');
-const https = require('https');
-const fs = require('fs');
+// const http = require('http');
+// const https = require('https');
+// const fs = require('fs');
 
 var allowedOrigins = ['http://localhost:3000',
                       'http://bearislands.com',
                       'https://bearislands.com'];
 
-let tempCredentials;
+// let tempCredentials;
 // Certificate
-if(config.PRODUCTION)
-{
-  const privateKey = fs.readFileSync('/etc/letsencrypt/live/' + config.websiteName + '/privkey.pem', 'utf8');
-  const certificate = fs.readFileSync('/etc/letsencrypt/live/bearislands.com/cert.pem', 'utf8');
-  const ca = fs.readFileSync('/etc/letsencrypt/live/bearislands.com/chain.pem', 'utf8');
+// if(config.PRODUCTION)
+// {
+//   const privateKey = fs.readFileSync('/etc/letsencrypt/live/' + config.websiteName + '/privkey.pem', 'utf8');
+//   const certificate = fs.readFileSync('/etc/letsencrypt/live/bearislands.com/cert.pem', 'utf8');
+//   const ca = fs.readFileSync('/etc/letsencrypt/live/bearislands.com/chain.pem', 'utf8');
 
-  tempCredentials = {
-    key: privateKey,
-    cert: certificate,
-    ca: ca
-  };
-}
+//   tempCredentials = {
+//     key: privateKey,
+//     cert: certificate,
+//     ca: ca
+//   };
+// }
 
-const credentials = tempCredentials;
+// const credentials = tempCredentials;
 
 var FusionAuth = require('@fusionauth/typescript-client');
 const client = new FusionAuth.FusionAuthClient(
@@ -52,8 +52,8 @@ const csrfProtection = csrfTokens({
 });
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -106,16 +106,16 @@ app.use((req, res) => {
 });
 
 // Starting both http & https servers
-const httpServer = http.createServer(app);
-const httpsServer = https.createServer(credentials, app);
+// const httpServer = http.createServer(app);
+// const httpsServer = https.createServer(credentials, app);
 
-httpServer.listen(config.httpServerPort, () => {
-  console.log('HTTP Server running on port ' + config.httpServerPort);
-});
+// httpServer.listen(config.httpServerPort, () => {
+//   console.log('HTTP Server running on port ' + config.httpServerPort);
+// });
 
-httpsServer.listen(config.httpsServerPort, () => {
-  console.log('HTTPS Server running on port ' + config.httpsServerPort);
-});
+// httpsServer.listen(config.httpsServerPort, () => {
+//   console.log('HTTPS Server running on port ' + config.httpsServerPort);
+// });
 
 // app.listen(config.serverPort, () => console.log(`FusionAuth example app listening on port ${config.serverPort}.`));
 // console.log('FusionAuth example app listening on port');
