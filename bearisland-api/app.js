@@ -52,8 +52,8 @@ const csrfProtection = csrfTokens({
 });
 
 // view engine setup
-// app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'jade');
+ app.set('views', path.join(__dirname, 'views'));
+ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -77,10 +77,10 @@ app.use(cors({
   credentials: true
 }));
 
-app.use('/', indexRouter);
-app.use('/auth', authRouter);
-app.use('/admin', adminRouter);
-app.use('/contact', contactRouter);
+app.use('/api/', indexRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/contact', contactRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -117,7 +117,7 @@ app.use((req, res) => {
 //   console.log('HTTPS Server running on port ' + config.httpsServerPort);
 // });
 
-// app.listen(config.serverPort, () => console.log(`FusionAuth example app listening on port ${config.serverPort}.`));
-// console.log('FusionAuth example app listening on port');
+app.listen(config.serverPort, () => console.log(`FusionAuth example app listening on port ${config.serverPort}.`));
+console.log('FusionAuth example app listening on port');
 
 module.exports = app;
