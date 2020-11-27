@@ -37,8 +37,8 @@ var allowedOrigins = ['http://localhost:9000',
 
 var FusionAuth = require('@fusionauth/typescript-client');
 const client = new FusionAuth.FusionAuthClient(
-    config.apiKey,   //better put this into a config
-    'http://localhost:9011'
+    config.apiKey,
+    config.fusionAuthServer
 );
 
 var indexRouter = require('./routes/index');
@@ -69,7 +69,7 @@ app.use(cors({
   origin: function(origin, callback){
     // allow requests with no origin 
     // (like mobile apps or curl requests)
-    if(!origin) return callback(null, true);
+    // if(!origin) return callback(null, true);
     if(allowedOrigins.indexOf(origin) === -1){
       var msg = 'The CORS policy for this site does not ' +
                 'allow access from the specified Origin.';
@@ -127,7 +127,6 @@ app.use((req, res) => {
 //   console.log('HTTPS Server running on port ' + config.httpsServerPort);
 // });
 
-app.listen(config.serverPort, () => console.log(`FusionAuth example app listening on port ${config.serverPort}.`));
-console.log('FusionAuth example app listening on port');
+app.listen(config.serverPort, () => console.log(`bearislands express app listening on port ${config.serverPort}.`));
 
 module.exports = app;

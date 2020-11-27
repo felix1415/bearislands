@@ -10,8 +10,8 @@ var FusionAuth = require('@fusionauth/typescript-client');
 const topology = {useUnifiedTopology: true};
 
 const client = new FusionAuth.FusionAuthClient(
-    config.apiKey,   //better put this into a config
-    'http://localhost:9011'
+    config.apiKey,
+    config.fusionAuthServer
 );
 
 const MongoClient = require('mongodb').MongoClient

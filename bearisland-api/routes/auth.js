@@ -8,8 +8,8 @@ const config = require('../../config');
 var FusionAuth = require('@fusionauth/typescript-client');
 
 const client = new FusionAuth.FusionAuthClient(
-    config.apiKey,   //better put this into a config
-    'http://localhost:9011'
+    config.apiKey,
+    config.fusionAuthServer
 );
 
 router.use(cookieParser());
