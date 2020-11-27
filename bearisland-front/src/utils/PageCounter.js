@@ -13,59 +13,60 @@ class PageCounter extends React.Component
     {
         super(props);
         this.state = {name: this.props.name, counters: ''}
+
+        this.updateCounter = this.updateCounter.bind(this);
+        this.getCounters = this.getCounters.bind(this);
     }
 
     getCounters()
     {
         axios
-        .get(config.apiServer + config.serverPort + '/admin/getCounters')
+        .get('/api/admin/getCounters')
         .then(response =>
-            {
-                console.log(JSON.stringify(response));
-                console.log("got counters back successfully " + response);
-                if(response.status === 200)
-                {
-                    this.setState({'counters': JSON.stringify(response.data)});
-                }
-            })
+        {
+            console.log(JSON.stringify(response));
+            // console.log("got counters back successfully " + response);
+            // if(response.status === 200)
+            // {
+            //     this.setState({'counters': JSON.stringify(response.data)});
+            // }
+        })
         .catch(err => 
-            {
-                console.error("getting messages failied: " + err);
-            });
+        {
+            console.error("getting counters failed: " + err);
+        });
     }
 
     updateCounter()
     {
         console.log("about to send: " + this.state.name);
-        this.scrollToMyBottomOfChat();
         var payload = {
-            "counter":this.state.name
+            "counterName":this.state.name
         }
         axios
-        .post(config.apiServer + config.serverPort + '/contact/newMessage ', payload)
-        .then(response =>
-            {
-                if(response.status === 200)
-                {
-                    this.setState({sentMessage: true});
-                }
-            })
+        .post('/api/counters', payload)
         .then(response =>
         {
-            this.getAllMessages();
+            if(response.status === 200)
+            {
+                console.log("loaded page " + this.state.name);
+            }
         })
         .catch(err => 
         {
-            console.error("newMessage failed: " + err);
-        });   
+            console.error("sending counters failed: " + err);
+        }); 
     }
 
     render()
     {
         if(!this.props.read)
         {
+            this.updateCounter();
             return <div/>;
         }
+        console.log("get the counters");
+        // this.getCounters();
         return (
             <Box my={4}>
                 <Grid container spacing={4}>

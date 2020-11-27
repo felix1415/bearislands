@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 
 import ServerGridList from '../ServerGrid';
+import PageCounter from '../utils/PageCounter';
 
 export default function Home() {
 
@@ -30,8 +31,11 @@ export default function Home() {
 
 			        
 		        </Grid>
+		        <PageCounter name="home" />
 		    </Box>
+
 	    </Container>
+	    
 
 		);
 
