@@ -93,9 +93,9 @@ class CustomizedMenus extends React.Component
             <StyledMenuItem component={RLink} to='/' onClick={this.handleClose}>
               <ListItemText primary="HOME" />
             </StyledMenuItem>
-            <StyledMenuItem component={RLink} to='/dayz' onClick={this.handleClose}>
+            {/*<StyledMenuItem component={RLink} to='/dayz' onClick={this.handleClose}>
               <ListItemText primary="DAYZ" />
-            </StyledMenuItem>
+            </StyledMenuItem>*/}
             <StyledMenuItem component={RLink} to='/rust' onClick={this.handleClose}>
               <ListItemText primary="RUST" />
             </StyledMenuItem>
