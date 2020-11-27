@@ -135,7 +135,7 @@ class ChatWindow extends React.Component
             "message":this.state.message
         }
         axios
-        .post(config.apiServer + config.serverPort + '/contact/newMessage ', payload)
+        .post('/api/contact/newMessage ', payload)
         .then(response =>
             {
                 if(response.status === 200)
@@ -159,7 +159,7 @@ class ChatWindow extends React.Component
         if(this.props.uuid)
         {
             axios
-            .get(config.apiServer + config.serverPort + '/contact/getAllMessages', {
+            .get('/api/contact/getAllMessages', {
                 params: {
                   uuid: this.props.uuid
                 }

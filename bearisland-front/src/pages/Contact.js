@@ -58,7 +58,7 @@ class Contact extends React.Component
 			"message":this.state.message
  		}
  		axios
-		.post(config.apiServer + config.serverPort + '/contact/initialMessage ', payload)
+		.post('/api/contact/initialMessage ', payload)
 	    .then(response =>
     	  	{
 	    	  	if(response.status === 200)

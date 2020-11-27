@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
-const config = require('../config');
+const config = require('../../config');
 const auth = require('./auth');
 const { v4: uuidv4 } = require('uuid');
 

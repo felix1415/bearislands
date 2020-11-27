@@ -12,11 +12,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
 import Button from "@material-ui/core/Button";
 import ChatWindow from './ChatWindow';
-// import Button from '@material-ui/core/Button';
-// import TextField from '@material-ui/core/TextField';
-// import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-// import {CopyToClipboard} from 'react-copy-to-clipboard';
-import axios from 'axios';
 
 const config = require('../config');
 

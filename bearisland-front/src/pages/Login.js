@@ -51,7 +51,7 @@ class Login extends React.Component
 			"password":this.state.password
  		}
  		axios
-	    .post(config.apiServer + config.serverPort + '/auth/login ', payload, {withCredentials: true})
+	    .post('/api/auth/login ', payload, {withCredentials: true})
 	    .then(response =>
     	  	{
 	    	  	if(response.status === 200)

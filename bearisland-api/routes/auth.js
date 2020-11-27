@@ -3,7 +3,7 @@ var router = express.Router();
 const bodyParser = require('body-parser');
 var cookie = require('cookie');
 var cookieParser = require('cookie-parser');
-const config = require('../config');
+const config = require('../../config');
 
 var FusionAuth = require('@fusionauth/typescript-client');
 

@@ -7,13 +7,15 @@ var logger = require('morgan');
 var cors = require('cors');
 var session = require('express-session');
 var csrfTokens = require('csrf')
-const config = require('../config'); //local
+const config = require('../../config');
 
 // const http = require('http');
 // const https = require('https');
 // const fs = require('fs');
 
-var allowedOrigins = ['http://localhost:3000',
+const frontendAppBuild = "/../bearisland-front/build";
+
+var allowedOrigins = ['http://localhost:9000',
                       'http://bearislands.com',
                       'https://bearislands.com'];
 
@@ -45,6 +47,8 @@ var adminRouter = require('./routes/admin');
 var contactRouter = require('./routes/contact');
 
 var app = express();
+
+app.use(express.static(path.join(__dirname, frontendAppBuild)));
 
 const csrfProtection = csrfTokens({
   cookie: true
@@ -83,6 +87,10 @@ app.use('/api/', indexRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/contact', contactRouter);
+
+app.get('*', (req,res) =>{
+    res.sendFile(path.join(__dirname+frontendAppBuild+'/index.html'));
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

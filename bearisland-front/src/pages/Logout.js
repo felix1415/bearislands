@@ -21,7 +21,7 @@ class Logout extends React.Component
     }
 
     componentDidMount(){
-        axios.get(config.apiServer + config.serverPort + '/auth/logout', {withCredentials: true})
+        axios.get('/api/auth/logout', {withCredentials: true})
         .then(response =>
             {
                 console.log("logged out successfully")

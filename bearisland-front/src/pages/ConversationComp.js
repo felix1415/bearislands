@@ -83,7 +83,7 @@ class ConversationComp extends React.Component
     getAllConversations()
     {
         console.log("Getting conversations")
-        var apiMethod = '/admin/';
+        var apiMethod = '/api/admin/';
 
         if(this.state.showArchivedMessages)
         {
@@ -98,7 +98,7 @@ class ConversationComp extends React.Component
         console.log(apiMethod)
 
         axios
-        .get(config.apiServer + config.serverPort + apiMethod, {withCredentials: true})
+        .get(apiMethod, {withCredentials: true})
         .then(response =>
             {
                 console.log(JSON.stringify(response));
@@ -120,7 +120,7 @@ class ConversationComp extends React.Component
             "uuid":this.state.uuid,
         }
 
-        var apiMethod = '/admin/';
+        var apiMethod = '/api/admin/';
 
         if(archive)
         {
@@ -132,7 +132,7 @@ class ConversationComp extends React.Component
         }
 
         axios
-        .post(config.apiServer + config.serverPort + apiMethod, payload, {withCredentials: true})
+        .post(apiMethod, payload, {withCredentials: true})
         .then(response =>
         {
             if(response.status === 200)
@@ -166,7 +166,7 @@ class ConversationComp extends React.Component
         }
         console.log("calling remove @@@@");
         axios
-        .post(config.apiServer + config.serverPort + '/admin/removeChat', payload, {withCredentials: true})
+        .post('/api/admin/removeChat', payload, {withCredentials: true})
         .then(response =>
         {
             if(response.status === 200)
@@ -191,7 +191,7 @@ class ConversationComp extends React.Component
         }
 
         axios
-        .post(config.apiServer + config.serverPort + '/admin/sendReminder', payload, {withCredentials: true})
+        .post('/api/admin/sendReminder', payload, {withCredentials: true})
         .then(response =>
         {
             if(response.status === 200 || response.status === 202)
