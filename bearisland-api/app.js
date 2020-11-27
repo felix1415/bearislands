@@ -18,7 +18,6 @@ var allowedOrigins = ['http://localhost:3000',
                       'https://bearislands.com'];
 
 // let tempCredentials;
-// Certificate
 // if(config.PRODUCTION)
 // {
 //   const privateKey = fs.readFileSync('/etc/letsencrypt/live/' + config.websiteName + '/privkey.pem', 'utf8');
@@ -70,9 +69,12 @@ app.use(cors({
     if(allowedOrigins.indexOf(origin) === -1){
       var msg = 'The CORS policy for this site does not ' +
                 'allow access from the specified Origin.';
+      console.log(msg + " " + origin);
       return callback(new Error(msg), false);
     }
+    console.log("Success with " + origin);
     return callback(null, true);
+
   },
   credentials: true
 }));
