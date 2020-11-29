@@ -15,7 +15,7 @@ const config = require('../../config');
 
 const frontendAppBuild = "/../bearisland-front/build";
 
-var allowedOrigins = ['https://bearislands.com/',
+var allowedOrigins = ['https://www.bearislands.com',
                       'http://localhost:9000',
                       'http://bearislands.com',
                       'https://bearislands.com'];
