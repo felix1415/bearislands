@@ -15,25 +15,10 @@ const config = require('../../config');
 
 const frontendAppBuild = "/../bearisland-front/build";
 
-var allowedOrigins = ['http://localhost:9000',
+var allowedOrigins = ['https://bearislands.com/',
+                      'http://localhost:9000',
                       'http://bearislands.com',
                       'https://bearislands.com'];
-
-// let tempCredentials;
-// if(config.PRODUCTION)
-// {
-//   const privateKey = fs.readFileSync('/etc/letsencrypt/live/' + config.websiteName + '/privkey.pem', 'utf8');
-//   const certificate = fs.readFileSync('/etc/letsencrypt/live/bearislands.com/cert.pem', 'utf8');
-//   const ca = fs.readFileSync('/etc/letsencrypt/live/bearislands.com/chain.pem', 'utf8');
-
-//   tempCredentials = {
-//     key: privateKey,
-//     cert: certificate,
-//     ca: ca
-//   };
-// }
-
-// const credentials = tempCredentials;
 
 var FusionAuth = require('@fusionauth/typescript-client');
 const client = new FusionAuth.FusionAuthClient(
@@ -114,18 +99,6 @@ app.disable('etag');  //app.set('etag', false); // turn off
 app.use((req, res) => {
   res.send('Hello there !');
 });
-
-// Starting both http & https servers
-// const httpServer = http.createServer(app);
-// const httpsServer = https.createServer(credentials, app);
-
-// httpServer.listen(config.httpServerPort, () => {
-//   console.log('HTTP Server running on port ' + config.httpServerPort);
-// });
-
-// httpsServer.listen(config.httpsServerPort, () => {
-//   console.log('HTTPS Server running on port ' + config.httpsServerPort);
-// });
 
 app.listen(config.serverPort, () => console.log(`bearislands express app listening on port ${config.serverPort}.`));
 

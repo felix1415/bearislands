@@ -268,7 +268,6 @@ function validateAdmin(req, res, next) {
 							DEBUG_LOG("user " + req.cookies.user.id + " is admin");
                             refresh(req, res, next);
                             return;
-							// next();
 						}
 
 					}
@@ -279,7 +278,6 @@ function validateAdmin(req, res, next) {
                 console.log("vaild to validate jwt")
                 console.log("ERROR: ", JSON.stringify(error, null, 8));
                 refresh(req, res, next);
-                // res.status(401).send("error");
             });
     }
 }

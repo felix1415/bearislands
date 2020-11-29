@@ -30,6 +30,24 @@ router.get('/logoutall', function(req, res) {
     invalidateCookies(req, res, true);
 });
 
+router.get('/getApps', function(req, res) {
+    const obj = {
+        'tenantId': config.tenantId,
+        'applicationId': config.applicationId
+    };
+    client.retrieveApplication(obj)
+    .then(function(clientResponse) {
+        console.log("response from fusionauth: ",JSON.stringify(clientResponse, null, 8));
+        res.send("success");
+    })
+    .catch(function(error) {
+        console.log("ERROR: ", JSON.stringify(error, null, 8))
+        res.statusCode = error.statusCode;
+        res.statusMessage = "Login failed";
+        res.send(JSON.stringify(clientResponse, null, 8));
+    });
+});
+
 router.get('/reqprint', function(req, res) {   
 	console.log('email: ', req.cookies.email); 
     console.log('email: ', req.cookies.token); 
@@ -45,17 +63,15 @@ router.post('/login', function(req, res) {
             'password': req.body.password,
             'applicationId': config.applicationId
         };
-        console.log("obj: " + JSON.stringify(obj));
+        // console.log("obj: " + JSON.stringify(obj)); - email and password
         client.login(obj)
             .then(function(clientResponse) {
-                // console.log("response from fusionauth: ",JSON.stringify(clientResponse, null, 8));
+                console.log("response from fusionauth: ",JSON.stringify(clientResponse, null, 8));
                 console.log("response from fusionauth: ",JSON.stringify(clientResponse.statusCode, null, 8));
-                //, secure: process.env.NODE_ENV === 'production'? true: false
+
                 res.cookie('token', clientResponse.response.token, { httpOnly: true, maxAge: 2592000, overwrite: true});
                 res.cookie('refreshToken', clientResponse.response.refreshToken, { httpOnly: true, maxAge: 2592000, overwrite: true});
                 res.cookie('user', clientResponse.response.user, { httpOnly: true, maxAge: 2592000, overwrite: true});
-
-                // req.session.cookie.maxAge = 5555;
 
                 console.log("Successfully saved cookies : " +  JSON.stringify(req.cookies));
                 res.send('success');
@@ -74,33 +90,6 @@ router.use(function (err, req, res, next) {
   console.error(err.stack)
   res.status(500).send('Something broke!')
 })
-
-
-// router.get('/refresh', function(req, res) {
-// 	refresh(req, res);
-// });
-
-// function refresh(req, res)
-// {
-//     console.log("about to refreshToken");
-// 	if (req.cookies.user && req.cookies.token && req.cookies.refreshToken)
-// 	{
-// 	    const obj = {
-// 	        'refreshToken': req.cookies.refreshToken
-// 	    };
-// 		 client.exchangeRefreshTokenForJWT(obj)
-// 		 		.then(function(clientResponse)
-// 		 		{
-// 		 			console.log("response from fusionauth: ",JSON.stringify(clientResponse, null, 8));
-//                     res.cookie('token', clientResponse.response.token, { httpOnly: true, maxAge: 2592000});
-//                     res.cookie('refreshToken', clientResponse.response.refreshToken, { httpOnly: true, maxAge: 2592000});
-//                     res.cookie('user', req.cookies.user, { httpOnly: true, maxAge: 2592000});
-// 		 		})
-// 		 		.catch(function(error) {
-// 	                console.log("ERROR: ", JSON.stringify(error, null, 8))
-// 	            });
-// 	}
-// }
 
 function invalidateCookies(req, res, all)
 {

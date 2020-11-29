@@ -60,22 +60,6 @@ router.get('/getAllMessages', function(req, res) {
 
 });
 
-
-// router.get('/getConversation', function(req, res) {
-//     console.log(req.query.uuid);
-
-//     MongoClient.connect(config.mongoInstance, topology, function(err, db) {
-//       if (err) throw err;
-//       var dbo = db.db(config.mongoDatabase);
-//       dbo.collection(req.query.uuid).find({"_id.$oid" : req.query.uuid}, function(err, res) {
-//         if (err) throw err;
-//         console.log("1 document (" + res);
-//         db.close();
-//       });
-//     });
-//     res.send('send');
-// });
-
 router.post('/initialMessage', function(req, res) {
     const newUuid = uuidv4();
     const contactForm = {
