@@ -9,20 +9,20 @@ import GridListTile  from '@material-ui/core/GridListTile';
 
 const config = require('../config');
 
-function     GenerateCounterDisplay(props) {
-    const classes = useStyles();
-    return JSON.parse(props.data).map((value) =>
-        <GridListTile key={value._id} cols={1} rows={1}>
-            <Paper elevation={3}>
-                {React.cloneElement(props.element, {
-                key: props.value._id,
-                primary: props.value.counterName,
-                secondary: props.value.count
-                })}
-            </Paper>
-        </GridListTile>
-    );
-}
+// function     GenerateCounterDisplay(props) {
+//     const classes = useStyles();
+//     return JSON.parse(props.data).map((value) =>
+//         <GridListTile key={value._id} cols={1} rows={1}>
+//             <Paper elevation={3}>
+//                 {React.cloneElement(props.element, {
+//                 key: props.value._id,
+//                 primary: props.value.counterName,
+//                 secondary: props.value.count
+//                 })}
+//             </Paper>
+//         </GridListTile>
+//     );
+// }
 
 class PageCounter extends React.Component
 {
