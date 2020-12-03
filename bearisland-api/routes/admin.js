@@ -24,6 +24,29 @@ router.use(cookieParser());
 // router.use('/*', (req, res, next) => {
 //     refresh(req, res, next);
 // });
+
+router.get("/getCounters", function(req, res) {
+    DEBUG_LOG("get the counters");
+    try
+    {
+        MongoClient.connect(config.mongoInstance, topology, function(err, db) {
+            if (err) throw err;
+            var dbo = db.db(config.mongoDatabase);
+            dbo.collection("counters").find().toArray(function(err, result) {
+                if (err) throw err;
+                console.log("1 document (" + result);
+                res.send(result);
+                db.close();
+            });
+        });
+    }
+    catch(err)
+    {
+        console.log("ERROR: " + err.message);
+        res.send("error");
+    }
+});
+
 router.use('/*', (req, res, next) => {
 	validateAdmin(req, res, next);
 });
@@ -166,7 +189,7 @@ function getUser(email)
 }
 
 router.get('/getAllConversations', function(req, res) {
-    console.log("trying for messsages from conversation ");
+    DEBUG_LOG("trying for messsages from conversation ");
     try
     {
         MongoClient.connect(config.mongoInstance, topology, function(err, db) {
@@ -174,7 +197,7 @@ router.get('/getAllConversations', function(req, res) {
             var dbo = db.db(config.mongoDatabase);
           dbo.collection("conversations").find({archive: false}).toArray(function(err, result) {
             if (err) throw err;
-            console.log("documents:" + JSON.stringify(result, null, 4));
+            DEBUG_LOG("documents:" + JSON.stringify(result, null, 4));
             res.send(result);
             db.close();
           });
@@ -204,27 +227,6 @@ router.get("/getAllArchivedConversations", function(req, res) {
     catch(err)
     {
         DEBUG_LOG("ERROR: " + err.message);
-        res.send("error");
-    }
-});
-
-router.get("/getCounters", function(req, res) {
-    try
-    {
-        MongoClient.connect(config.mongoInstance, topology, function(err, db) {
-            if (err) throw err;
-            var dbo = db.db(config.mongoDatabase);
-            dbo.collection("counters").find().toArray(function(err, result) {
-                if (err) throw err;
-                console.log("1 document (" + result);
-                res.send(result);
-                db.close();
-            });
-        });
-    }
-    catch(err)
-    {
-        console.log("ERROR: " + err.message);
         res.send("error");
     }
 });

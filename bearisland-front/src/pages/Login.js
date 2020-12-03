@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField';
 // import Snackbar from '@material-ui/core/Snackbar';
 import { Redirect } from 'react-router-dom'
 import axios from 'axios';
+import PageCounter from '../utils/PageCounter';
 
 const config = require('../config');
 
@@ -106,8 +107,7 @@ class Login extends React.Component
 */}
 					</form>
 
-	             <br/>
-	             <br/>
+				<PageCounter name="login" />
 
 		    </Box>
 		);

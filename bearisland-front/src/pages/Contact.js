@@ -7,6 +7,7 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import Grid from '@material-ui/core/Grid';
 import axios from 'axios';
+import PageCounter from '../utils/PageCounter';
 
 const config = require('../config');
 
@@ -111,6 +112,7 @@ class Contact extends React.Component
 						<Button type="submit" variant="contained" label="Submit" primary="true">Submit </Button>
 					</form>
 				</Grid>
+				<PageCounter name="contact" />
 
 
 		        {/*<CopyToClipboard text="BearPatrol.BearIsland@Gmail.com">

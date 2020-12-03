@@ -8,6 +8,7 @@ import Hidden from '@material-ui/core/Hidden';
 import Paper from '@material-ui/core/Paper';
 
 import ResponsiveImage from '../utils/ResponsiveImage';
+import PageCounter from '../utils/PageCounter';
 
 //font stuff
 import { makeStyles } from '@material-ui/core/styles';
@@ -190,6 +191,7 @@ export default function Rust() {
 					</Grid>
 				</Grid>
 			</Grid>
+			<PageCounter name="rust" />
 	    </Box>
 	    </Container>
 	);

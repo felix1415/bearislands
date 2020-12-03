@@ -5,36 +5,33 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 
+import GridListTile  from '@material-ui/core/GridListTile';
+
 const config = require('../config');
+
+function     GenerateCounterDisplay(props) {
+    const classes = useStyles();
+    return JSON.parse(props.data).map((value) =>
+        <GridListTile key={value._id} cols={1} rows={1}>
+            <Paper elevation={3}>
+                {React.cloneElement(props.element, {
+                key: props.value._id,
+                primary: props.value.counterName,
+                secondary: props.value.count
+                })}
+            </Paper>
+        </GridListTile>
+    );
+}
 
 class PageCounter extends React.Component
 {
     constructor(props)
     {
         super(props);
-        this.state = {name: this.props.name, counters: ''}
+        this.state = {name: this.props.name}
 
         this.updateCounter = this.updateCounter.bind(this);
-        this.getCounters = this.getCounters.bind(this);
-    }
-
-    getCounters()
-    {
-        axios
-        .get('/api/admin/getCounters')
-        .then(response =>
-        {
-            console.log(JSON.stringify(response));
-            // console.log("got counters back successfully " + response);
-            // if(response.status === 200)
-            // {
-            //     this.setState({'counters': JSON.stringify(response.data)});
-            // }
-        })
-        .catch(err => 
-        {
-            console.error("getting counters failed: " + err);
-        });
     }
 
     updateCounter()
@@ -60,18 +57,16 @@ class PageCounter extends React.Component
 
     render()
     {
-        if(!this.props.read)
+        if(!this.props.data)
         {
-            this.updateCounter();
+            // this.updateCounter();
             return <div/>;
         }
-        console.log("get the counters");
-        // this.getCounters();
         return (
             <Box my={4}>
                 <Grid container spacing={4}>
                     <Grid item xs={12}>
-                        Counters - none added yet.
+                        Counters
                     </Grid>
                 </Grid>
             </Box>

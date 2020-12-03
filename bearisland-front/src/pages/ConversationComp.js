@@ -82,12 +82,10 @@ class ConversationComp extends React.Component
 
     getAllConversations()
     {
-        console.log("Getting conversations")
         var apiMethod = '/api/admin/';
 
         if(this.state.showArchivedMessages)
         {
-            console.log("getting archived conversations");
             apiMethod = apiMethod.concat("getAllArchivedConversations");
         }
         else
@@ -95,19 +93,18 @@ class ConversationComp extends React.Component
             apiMethod = apiMethod.concat("getAllConversations");
         }
 
-        console.log(apiMethod)
+        console.log(apiMethod);
 
         axios
         .get(apiMethod, {withCredentials: true})
         .then(response =>
+        {
+            console.log(apiMethod + " successfully " + response);
+            if(response.status === 200)
             {
-                console.log(JSON.stringify(response));
-                console.log("got convo back successfully " + response);
-                if(response.status === 200)
-                {
-                    this.setState({'conversations': JSON.stringify(response.data)});
-                }
-            })
+                this.setState({'conversations': JSON.stringify(response.data)});
+            }
+        })
         .catch(err => 
         {
             console.error("getting conversations failied: " + err);
@@ -137,13 +134,13 @@ class ConversationComp extends React.Component
         {
             if(response.status === 200)
             {
-                console.log("sent message successfully " + response.status);
+                console.log("sent archive successfully " + response.status);
                 this.getAllConversations();
             }
         })
         .catch(err => 
         {
-            console.error("sending message failied: " + err);
+            console.error("sending archive failied: " + err);
         }); 
     }
 
@@ -164,21 +161,20 @@ class ConversationComp extends React.Component
         var payload = {
             "uuid":this.state.uuid,
         }
-        console.log("calling remove @@@@");
         axios
         .post('/api/admin/removeChat', payload, {withCredentials: true})
         .then(response =>
         {
             if(response.status === 200)
             {
-                console.log("sent message successfully " + response.status);
+                console.log("sent delete successfully " + response.status);
                 this.setState({'uuid': ''});
                 this.setState({'archiveThisChat': false}, () => { this.getAllConversations(); });
             }
         })
         .catch(err => 
         {
-            console.error("sending message failied: " + err);
+            console.error("sending delete failied: " + err);
         }); 
 
     }
@@ -196,13 +192,13 @@ class ConversationComp extends React.Component
         {
             if(response.status === 200 || response.status === 202)
             {
-                console.log("sent message successfully " + response.status);
+                console.log("sent reminder successfully " + response.status);
                 this.setState({openSnack: true});
             }
         })
         .catch(err => 
         {
-            console.error("sending message failied: " + err);
+            console.error("sending reminder failied: " + err);
         }); 
         
         //snackbar
@@ -224,10 +220,10 @@ class ConversationComp extends React.Component
         }
 
         return (
-            <Box my={1}>
-                <Grid container spacing={4}>
+            <Box my={2}>
+                <Grid container spacing={1}>
                     <Grid item xs={12}>
-                        <Grid container spacing={4}>
+                        <Grid container spacing={1}>
                             <Grid item xs={2}>
                                 <Button variant="contained" value="archived" onClick={this.swapLists}>View Archived Messages</Button>
                             </Grid>
