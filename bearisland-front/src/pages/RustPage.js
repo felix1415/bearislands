@@ -67,7 +67,7 @@ export default function Rust() {
 			<Grid container spacing={4}>
 				<Hidden only={['sm', 'xs']}>
 					<Grid item xs={3}>
-				  		<Iframe src="https://cdn.battlemetrics.com/b/standardVertical/2910904.html?foreground=%23EEEEEE&linkColor=%231185ec&lines=%23333333&background=%23222222&chart=players%3A24H&chartColor=%23FF0700&showPlayers=1&maxPlayersHeight=700" 
+				  		<Iframe src="https://cdn.battlemetrics.com/b/standardVertical/9187010.html?foreground=%23EEEEEE&linkColor=%231185ec&lines=%23333333&background=%23222222&chart=players%3A24H&chartColor=%23FF0700&showPlayers=1&maxPlayersHeight=700" 
 				        name="jwtpo"
 				        height="1020px"
 				        width="200px" />
