@@ -239,6 +239,7 @@ class ConversationComp extends React.Component
                                     <ListItemText primary={
                                                            <React.Fragment>
                                                                <Typography
+                                                                noWrap={false}
                                                                 variant="h6"
                                                                 color="texPrimary"
                                                               >
@@ -248,6 +249,7 @@ class ConversationComp extends React.Component
                                                   secondary={
                                                           <React.Fragment>
                                                               <Typography
+                                                                noWrap={false}
                                                                 variant="body1"
                                                                 color="textSecondary"
                                                               >
@@ -257,7 +259,7 @@ class ConversationComp extends React.Component
                                                               <Typography
                                                                 variant="body2"
                                                                 color="textSecondary"
-                                                                noWrap="true"
+                                                                noWrap={false}
                                                               >
                                                                 {convo.message}
                                                               </Typography>
