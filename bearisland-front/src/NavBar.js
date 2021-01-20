@@ -65,15 +65,15 @@ class MainBar extends React.Component
     // this.state={loggedIn: false};
     this.state = JSON.parse(localStorage.getItem('rootNavBarState'))
         ? JSON.parse(localStorage.getItem('rootNavBarState'))
-        : {loggedIn: false, email:''};
+        : {loggedIn: false, username:''};
     this.setLoggedIn = this.setLoggedIn.bind(this);
   }
 
 
-  setLoggedIn(newLoggedInValue, loggedInEmail, callback)
+  setLoggedIn(newLoggedInValue, loggedInUsername, callback)
   {
       this.setState({ loggedIn: newLoggedInValue });
-      this.setState({ email: loggedInEmail });
+      this.setState({ username: loggedInUsername });
       console.log(this.state);
       localStorage.setItem('rootNavBarState', JSON.stringify(this.state));
   }
@@ -108,7 +108,7 @@ class MainBar extends React.Component
 
               <Hidden only={['sm', 'xs', 'md']}>
                 <Typography variant="body1" className={classes.title}>
-                    {this.state.email}
+                    {this.state.username}
                 </Typography>
               </Hidden>
 
@@ -132,7 +132,7 @@ class MainBar extends React.Component
                     <ChatWindow
                       errorMessage={"Bearislands Private Chat - this conversation doesn't exist or has been deleted."} 
                       uuid={match.params.uuid}
-                      email={this.state.email}
+                      email={this.state.username}
                     />
             )}/>
             <Route exact path="/contact/">
@@ -145,7 +145,7 @@ class MainBar extends React.Component
               <Logout setLoggedInCallback={this.setLoggedIn} loggedIn={this.state.loggedIn} />
             </Route>
             <Route exact path="/admin">
-              <Admin loggedIn={this.state.loggedIn} email={this.state.email}/>
+              <Admin loggedIn={this.state.loggedIn} email={this.state.username}/>
             </Route>
           </Switch>
         </div>

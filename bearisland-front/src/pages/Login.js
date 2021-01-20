@@ -26,20 +26,11 @@ class Login extends React.Component
 	constructor(props)
 	{
 		super(props);
-		this.state={email:'', password:'', open: false, loginMessage:'', redirect: false, isMounted: false};
+		this.state={email:'', password:'', username:'', redirect: false, isMounted: false};
 		//user input
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
-
-		//snackbar bind
-		this.closeSnackbar = this.closeSnackbar.bind(this);
 	}
-
-	closeSnackbar (event, reason)
-	{
-    	this.setState({open: false});
-	}
-
 	handleChange (evt) {
 		this.setState({ [evt.target.name]: evt.target.value });
 	}
@@ -57,18 +48,13 @@ class Login extends React.Component
     	  	{
 	    	  	if(response.status === 200)
 	    	  	{
- 					console.log("Login successful " + response.status); 
- 					this.setState({loginMessage: 'Login successful.'});
- 					this.setState({open: true});
-
- 					this.props.setLoggedInCallback(true, this.state.email);
- 					return true;
+ 					this.setState({username: response.data});
+ 					console.log("login successful " + response.status); 
+ 					this.props.setLoggedInCallback(true, this.state.username);
  				}
 		  	})
 	    .catch(err => 
 	    	{
-		    	this.setState({loginMessage: "Login failed."});
-		    	this.setState({open: true});
 	      		console.error("login failed: " + err);
 	    	}); 		
 	}
@@ -97,14 +83,6 @@ class Login extends React.Component
 			               />
 			             <br/>
 			             <Button type="submit" variant="contained" label="Submit" primary="true ">Submit</Button>
-{/*			             
-						<Snackbar
-			              autoHideDuration={5000}
-						  open={this.state.open}
-						  onClose={this.closeSnackbar}
-						  message={this.state.loginMessage}
-						/>
-*/}
 					</form>
 
 				<PageCounter name="login" />
