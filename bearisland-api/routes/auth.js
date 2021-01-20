@@ -56,7 +56,7 @@ router.get('/reqprint', function(req, res) {
 
 router.post('/login', function(req, res) {
     if (req.cookies.user) {
-        console.log('user: ', req.cookies.user);
+        res.send("already logged in");
     } else {
         const obj = {
             'loginId': req.body.email,
@@ -72,9 +72,7 @@ router.post('/login', function(req, res) {
                 res.cookie('token', clientResponse.response.token, { httpOnly: true, maxAge: 2592000, overwrite: true});
                 res.cookie('refreshToken', clientResponse.response.refreshToken, { httpOnly: true, maxAge: 2592000, overwrite: true});
                 res.cookie('user', clientResponse.response.user, { httpOnly: true, maxAge: 2592000, overwrite: true});
-
-                console.log("Successfully saved cookies : " +  JSON.stringify(req.cookies));
-                res.send('success');
+                res.send(clientResponse.response.user.username);
             })
             .catch(function(error) {
                 console.log("ERROR: ", JSON.stringify(error, null, 8))
