@@ -9,14 +9,11 @@ var session = require('express-session');
 var csrfTokens = require('csrf')
 const config = require('../../config');
 
-// const http = require('http');
-// const https = require('https');
-// const fs = require('fs');
-
 const frontendAppBuild = "/../bearisland-front/build";
 
 var allowedOrigins = ['https://www.bearislands.com',
                       'http://localhost:9000',
+                      'http://localhost:3000',
                       'http://bearislands.com',
                       'https://bearislands.com'];
 
@@ -55,12 +52,12 @@ app.use(cors({
     // allow requests with no origin 
     // (like mobile apps or curl requests)
     if(!origin) return callback(null, true);
-    if(allowedOrigins.indexOf(origin) === -1){
-      var msg = 'The CORS policy for this site does not ' +
-                'allow access from the specified Origin.';
-      console.log(msg + " " + origin);
-      return callback(new Error(msg), false);
-    }
+    // if(allowedOrigins.indexOf(origin) === -1){
+    //   var msg = 'The CORS policy for this site does not ' +
+    //             'allow access from the specified Origin.';
+    //   console.log(msg + " " + origin);
+    //   return callback(new Error(msg), false);
+    // }
     console.log("Success with " + origin);
     return callback(null, true);
 
