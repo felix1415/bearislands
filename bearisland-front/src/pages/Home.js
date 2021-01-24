@@ -31,7 +31,7 @@ export default function Home() {
 
 			        
 		        </Grid>
-		        <PageCounter data={"TEST"}/>
+		        <PageCounter name={"home"}/>
 		    </Box>
 
 	    </Container>

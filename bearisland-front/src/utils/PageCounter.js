@@ -57,18 +57,31 @@ class PageCounter extends React.Component
 
     render()
     {
-        if(!this.props.data)
+        if(this.props.data)
         {
-            // this.updateCounter();
-            return <div/>;
+            return (
+                <Box my={4}>
+                    <Grid container spacing={4}>
+                        {JSON.parse(this.props.data).map((counter) => (
+                        <Grid item xs={3} >
+                                <Typography gutterBottom variant="h6">
+                                    {counter.counterName}: {counter.count}
+                                </Typography>
+                        </Grid>
+                        ))}
+                    </Grid>
+                </Box>
+                );
+        }
+        else
+        {
+            if(this.props.name)
+            {
+                this.updateCounter();
+            }
         }
         return (
             <Box my={4}>
-                <Grid container spacing={4}>
-                    <Grid item xs={12}>
-                        Counters
-                    </Grid>
-                </Grid>
             </Box>
         );
     }

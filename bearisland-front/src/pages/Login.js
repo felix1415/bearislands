@@ -84,9 +84,6 @@ class Login extends React.Component
 			             <br/>
 			             <Button type="submit" variant="contained" label="Submit" primary="true ">Submit</Button>
 					</form>
-
-				<PageCounter name="login" />
-
 		    </Box>
 		);
 	}

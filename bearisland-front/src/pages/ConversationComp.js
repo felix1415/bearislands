@@ -76,8 +76,6 @@ class ConversationComp extends React.Component
         {
             this.setState({'showArchivedMessages': false}, () => { this.getAllConversations(); })
         }
-
-        // this.getAllConversations();
     }
 
     getAllConversations()
@@ -103,6 +101,10 @@ class ConversationComp extends React.Component
             if(response.status === 200)
             {
                 this.setState({'conversations': JSON.stringify(response.data)});
+                if(this.props.loadedCallback)
+                {
+                    this.props.loadedCallback(true);
+                }
             }
         })
         .catch(err => 
