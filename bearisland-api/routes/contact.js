@@ -119,6 +119,16 @@ router.post('/newMessage', function(req, res) {
         console.log("1 document (" + message._id + ") inserted into messages of conversation " + convoUuid);
         db.close();
       });
+
+    //remove from archived convos if admin archived it once they were done with it
+    var filter = { _id: req.body.uuid };
+    var query = { $set: {'archive': false} };
+    var options = {upsert: true}
+      dbo.collection("conversations").updateOne(filter, query, function(err, res) {
+          if (err) throw err;
+          console.log("1 document with UUID " + req.body.uuid + " updated with " + JSON.stringify(query));
+          db.close();
+      });
     });
 
     res.send("stored");
