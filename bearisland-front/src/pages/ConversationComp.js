@@ -257,14 +257,6 @@ class ConversationComp extends React.Component
                                                               >
                                                                 {convo.email}
                                                               </Typography>
-
-                                                              <Typography
-                                                                variant="body2"
-                                                                color="textSecondary"
-                                                                noWrap={false}
-                                                              >
-                                                                {convo.message}
-                                                              </Typography>
                                                         </React.Fragment>
                                                             }
                                     />
