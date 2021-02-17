@@ -58,7 +58,7 @@ app.use(cors({
     //   console.log(msg + " " + origin);
     //   return callback(new Error(msg), false);
     // }
-    console.log("Success with " + origin);
+    // console.log("Success with " + origin);
     return callback(null, true);
 
   },
