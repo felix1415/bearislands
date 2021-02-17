@@ -6,7 +6,6 @@ var bodyParser = require('body-parser');
 var logger = require('morgan');
 var cors = require('cors');
 var session = require('express-session');
-var csrfTokens = require('csrf')
 const config = require('../../config');
 
 const frontendAppBuild = "/../bearisland-front/build";
@@ -31,10 +30,6 @@ var contactRouter = require('./routes/contact');
 var app = express();
 
 app.use(express.static(path.join(__dirname, frontendAppBuild)));
-
-const csrfProtection = csrfTokens({
-  cookie: true
-});
 
 // view engine setup
  app.set('views', path.join(__dirname, 'views'));

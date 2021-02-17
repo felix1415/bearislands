@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 const bodyParser = require('body-parser');
-var cookie = require('cookie');
 var cookieParser = require('cookie-parser');
 const config = require('../../config');
 
