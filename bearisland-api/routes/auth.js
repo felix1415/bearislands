@@ -14,10 +14,6 @@ const client = new FusionAuth.FusionAuthClient(
 
 router.use(cookieParser());
 
-router.get('/', function(req, res) {
-    res.send('Hello World from auth!');
-});
-
 router.get('/invalidateCookies', function(req, res) {
     invalidateCookies(req, res, false);
 });
@@ -30,29 +26,23 @@ router.get('/logoutall', function(req, res) {
     invalidateCookies(req, res, true);
 });
 
-router.get('/getApps', function(req, res) {
-    const obj = {
-        'tenantId': config.tenantId,
-        'applicationId': config.applicationId
-    };
-    client.retrieveApplication(obj)
-    .then(function(clientResponse) {
-        console.log("response from fusionauth: ",JSON.stringify(clientResponse, null, 8));
-        res.send("success");
-    })
-    .catch(function(error) {
-        console.log("ERROR: ", JSON.stringify(error, null, 8))
-        res.statusCode = error.statusCode;
-        res.statusMessage = "Login failed";
-        res.send(JSON.stringify(clientResponse, null, 8));
-    });
-});
-
-router.get('/reqprint', function(req, res) {   
-	console.log('email: ', req.cookies.email); 
-    console.log('email: ', req.cookies.token); 
-    res.send();
-});
+// router.get('/getApps', function(req, res) {
+//     const obj = {
+//         'tenantId': config.tenantId,
+//         'applicationId': config.applicationId
+//     };
+//     client.retrieveApplication(obj)
+//     .then(function(clientResponse) {
+//         console.log("response from fusionauth: ",JSON.stringify(clientResponse, null, 8));
+//         res.send("success");
+//     })
+//     .catch(function(error) {
+//         console.log("ERROR: ", JSON.stringify(error, null, 8))
+//         res.statusCode = error.statusCode;
+//         res.statusMessage = "Login failed";
+//         res.send(JSON.stringify(clientResponse, null, 8));
+//     });
+// });
 
 router.post('/login', function(req, res) {
     if (req.cookies.user) {

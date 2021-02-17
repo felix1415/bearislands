@@ -18,10 +18,6 @@ const MongoClient = require('mongodb').MongoClient
 
 router.use(cookieParser());
 
-router.get('/', function(req, res) {
-    res.send('Hello World from contact!');
-});
-
 router.post('/sendMessage', function(req, res) {
     const messagePayload = {
         '_id': req.body.uuid,
@@ -138,10 +134,5 @@ router.use(function (err, req, res, next) {
   console.error(err.stack)
   res.status(500).send('Something broke!')
 })
-
-
-router.get('/profile', function(req, res) {
-        res.send("Profile");
-});
 
 module.exports = router;

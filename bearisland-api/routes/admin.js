@@ -21,9 +21,6 @@ const MongoClient = require('mongodb').MongoClient
 const MAXAGE = 2592000000;
 
 router.use(cookieParser());
-// router.use('/*', (req, res, next) => {
-//     refresh(req, res, next);
-// });
 
 router.get("/getCounters", function(req, res) {
     DEBUG_LOG("get the counters");
@@ -80,7 +77,7 @@ router.post("/unArchiveChat", function(req, res) {
 router.post("/removeChat", function(req, res) {
     try
     {
-            MongoClient.connect(config.mongoInstance, topology, function(err, db) {
+        MongoClient.connect(config.mongoInstance, topology, function(err, db) {
             if (err) throw err;
             var dbo = db.db(config.mongoDatabase);
             dbo.collection(req.body.uuid).deleteOne();
@@ -88,14 +85,79 @@ router.post("/removeChat", function(req, res) {
                 if (err) throw err;
                 console.log("1 document with UUID " + req.body.uuid + " removed from conversations");
             });
-          });
-          res.send("delete");
+        });
+        res.send("delete");
     }
     catch(err)
     {
         DEBUG_LOG("ERROR: " + err.message);
         res.send("delete");
     }
+});
+
+router.get("/emailNotifications", function(req, res) {
+    DEBUG_LOG("get the notifcations for " + req.cookies.user.id);
+    // try
+    // {
+    //     MongoClient.connect(config.mongoInstance, topology, function(err, db) {
+    //         if (err) throw err;
+    //         var dbo = db.db(config.mongoDatabase);
+    //         dbo.collection("emailNotifications").find({"_id": req.cookies.user.id}, function(err, res) {
+    //             if (err) throw err;
+    //             // console.log("No document matches the provided query. " + JSON.stringify(res));
+    //             var cache = [];
+    //             console.log("No document matches the provided query. " + JSON.stringify(res, (key, value) => {
+    //               if (typeof value === 'object' && value !== null) {
+    //                 // Duplicate reference found, discard key
+    //                 if (cache.includes(value)) return;
+
+    //                 // Store value in our collection
+    //                 cache.push(value);
+    //               }
+    //               return value;
+    //             }));
+    //             cache = null; // Enable garbage collection
+    //             res.send(JSON.stringify(res));
+    //             db.close();
+    //         });
+    //     });
+    // }
+    // catch(err)
+    // {
+    //     console.log("ERROR: " + err.message);
+    //     res.send("error");
+    // }
+    res.send("error");
+});
+
+router.post("/emailNotifications", function(req, res) {
+    DEBUG_LOG("post the notifcations for " + req.cookies.user.id + " to " + req.body.emailNotifications);
+    try
+    {
+        MongoClient.connect(config.mongoInstance, topology, function(err, db) {
+            if (err) throw err;
+            var dbo = db.db(config.mongoDatabase);
+
+            //remove from archived convos if admin archived it once they were done with it
+            var filter = { _id: req.cookies.user.id };
+            var query = { $set: {'receiveEmails': req.body.emailNotifications} };
+            var options = {upsert: true};
+            dbo.collection("emailNotifications").updateOne(filter, query, function(err, res) {
+                if (err) throw err;
+                console.log("user " + req.cookies.user.id + " updated with " + req.body.emailNotifications);
+                db.close();
+            });
+        });
+
+        res.send("success");
+    }
+    catch(err)
+    {
+        console.log("ERROR: " + err.message);
+        res.send("error");
+    }
+
+
 });
 
 router.post("/sendReminder", function(req, res) {
@@ -189,35 +251,22 @@ function getUser(email)
 }
 
 router.get('/getAllConversations', function(req, res) {
-    DEBUG_LOG("trying for messsages from conversation ");
-    try
-    {
-        MongoClient.connect(config.mongoInstance, topology, function(err, db) {
-            if (err) throw err;
-            var dbo = db.db(config.mongoDatabase);
-          dbo.collection("conversations").find({archive: false}).toArray(function(err, result) {
-            if (err) throw err;
-            DEBUG_LOG("documents:" + JSON.stringify(result, null, 4));
-            res.send(result);
-            db.close();
-          });
-        });
-    }
-    catch(err)
-    {
-        DEBUG_LOG("ERROR: " + err.message);
-        res.send("error");
-    }
+    getConversations(req, res, false);
 });
 
 router.get("/getAllArchivedConversations", function(req, res) {
-    DEBUG_LOG("getting all conversations ");
+    getConversations(req, res, true);
+});
+
+function getConversations(req, res, archived)
+{
+    DEBUG_LOG("getting all conversations, archive=" + archived);
     try
     {
         MongoClient.connect(config.mongoInstance, topology, function(err, db) {
             if (err) throw err;
             var dbo = db.db(config.mongoDatabase);
-          dbo.collection("conversations").find({archive: true}).toArray(function(err, result) {
+          dbo.collection("conversations").find({archive: archived}).toArray(function(err, result) {
             if (err) throw err;
             res.send(result);
             db.close();
@@ -229,24 +278,7 @@ router.get("/getAllArchivedConversations", function(req, res) {
         DEBUG_LOG("ERROR: " + err.message);
         res.send("error");
     }
-});
-
-// router.get("/counters")
-
-// function landingPage(isAdmin, req, res)
-// {
-// 	//send stuff for landing page
-// 	console.log("admin is " + adminBool + " in second then");
-// 	if(adminBool)
-// 	{
-// 		console.log("admin about to do admin things");
-// 		res.send("That should work");
-// 	}
-// 	else
-// 	{
-// 		console.log("no");
-// 	}
-// }
+}
 
 function validateAdmin(req, res, next) {
     DEBUG_LOG("validate admin");
@@ -324,7 +356,6 @@ function DEBUG_LOG(message)
 {
 	if(debug)
 	{
-		// Date();
 		console.log("Debuglog : " + message)
 	}
 }
