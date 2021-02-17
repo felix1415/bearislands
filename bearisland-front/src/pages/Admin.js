@@ -16,11 +16,12 @@ class Admin extends React.Component
     {
         super(props);
 
-        this.state = {counters:'', emailNotifications: false}
+        this.state = {counters:'', loadedCounters: false, emailNotifications: false}
 
         this.getCounters = this.getCounters.bind(this);
         this.setLoadedConversationComp = this.setLoadedConversationComp.bind(this);
-        this.setEmailNotifications = this.setEmailNotifications.bind(this);
+        this.setEmailNotificationsChecked = this.setEmailNotificationsChecked.bind(this);
+        this.getEmailNotificationsChecked = this.getEmailNotificationsChecked.bind(this);
     }
 
 
@@ -35,6 +36,7 @@ class Admin extends React.Component
             console.log("got counters back successfully " + response);
             if(response.status === 200)
             {
+                this.setState({'loadedCounters': true});
                 this.setState({'counters': JSON.stringify(response.data)});
             }
         })
@@ -44,14 +46,15 @@ class Admin extends React.Component
         });
     }
 
-    setEmailNotificationsChecked()
+    setEmailNotificationsChecked(event)
     {
-        console.log("about to send: " + this.state.name);
+        this.setState({'emailNotifications': event.target.checked});
+        console.log(event.target.checked);
         var payload = {
             "emailNotifications": this.state.emailNotifications
         }
         axios
-        .post('/api/admin/setEmailNotificationsChecked', payload)
+        .post('/api/admin/emailNotifications', payload)
         .then(response =>
         {
             if(response.status === 200)
@@ -67,15 +70,19 @@ class Admin extends React.Component
 
     getEmailNotificationsChecked()
     {
+        if(this.state.emailNotifications)
+        {
+            return;
+        }
         axios
-        .get('/api/admin/getEmailNotificationsChecked')
+        .get('/api/admin/emailNotifications')
         .then(response =>
         {
             console.log(JSON.stringify(response));
-            console.log("got emailNotificationsChecked back successfully " + response);
+            console.log("got emailNotifications back successfully " + response);
             if(response.status === 200)
             {
-                this.setState({'emailNotificationsChecked': JSON.stringify(response.data)});
+                this.setState({'emailNotifications': JSON.stringify(response.data)});
             }
         })
         .catch(err => 
@@ -86,13 +93,7 @@ class Admin extends React.Component
 
     setLoadedConversationComp(loaded)
     {
-        console.log("@@@@ loadded and than, " + loaded)
         this.setState({ loadedConversationComp: loaded });
-    }
-
-    setEmailNotifications(setOn)
-    {
-        this.setState({'emailNotifications': setOn});
     }
 
     render()
@@ -102,11 +103,17 @@ class Admin extends React.Component
             return <Redirect to='/' />;
         }
 
-        if(!this.state.counters)
+        if(this.state.loadedConversationComp)
         {
-            if(this.state.loadedConversationComp)
+            if(!this.state.counters && !this.state.loadedCounters)
             {
                 this.getCounters();
+            }
+
+            if(this.state.loadedCounters && !this.state.loadedEmailNotifications)
+            {
+                this.getEmailNotificationsChecked();
+                this.setState({'loadedEmailNotifications': true});
             }
         }
 
@@ -120,8 +127,8 @@ class Admin extends React.Component
                             <FormControlLabel
                                 control={
                                   <Checkbox
-                                    checked={this.state.checkedB}
-                                    onChange={this.setEmailNotifications}
+                                    checked={this.state.emailNotifications}
+                                    onChange={this.setEmailNotificationsChecked}
                                     name="checkedB"
                                     color="primary"
                                   />
