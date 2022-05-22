@@ -6,18 +6,18 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "@fusionauth/typescript-client": "^1.24.0",
-    "body-parser": "^1.19.0",
-    "cookie-parser": "~1.4.4",
+    "@fusionauth/typescript-client": "^1.36.0",
+    "body-parser": "^1.20.0",
+    "cookie-parser": "~1.4.6",
     "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "express-session": "^1.17.1",
-    "http-errors": "^1.8.0",
-    "mongodb": "^3.6.4",
+    "express": "^4.18.1",
+    "express-session": "^1.17.3",
+    "http-errors": "^2.0.0",
+    "mongodb": "^4.6.0",
     "morgan": "^1.10.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.16"
   }
 }
